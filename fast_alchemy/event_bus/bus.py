@@ -1,46 +1,51 @@
 import inspect, asyncio, functools
-from typing import Callable, List, Tuple
+from abc import ABC, abstractmethod
+from typing import Callable, List, Tuple, Iterable
 
-from fast_alchemy.event_bus import event_queue
+
+class EventHandler:
+    def __init__(self, func, on_publish=False):
+        self.func = func
+        self.on_publish = on_publish
+
+    def handle(self, event):
+        self.func(event)
+
+    async def async_handle(self, event):
+        if inspect.iscoroutinefunction(self.func):
+            await self.func(event)
+        else:
+            loop = asyncio.get_running_loop()
+            await loop.run_in_executor(None, functools.partial(self.func, event))
 
 
-class EventBus:
+class EventBus(ABC):
+    @abstractmethod
+    def handle_event(self, event):
+        pass
+
+    @abstractmethod
+    async def handle_async_events(self, events: Iterable):
+        pass
+
+class LocalEventBus(EventBus):
     def __init__(self):
-        self.events = {}
+        self.event_handlers = {}
 
-    def subscribe(self, event_list, func: Callable, on_publish=False):
+    def subscribe(self, event_type_list, func: Callable, on_publish=False):
         """
         Register an event handler for one or multiple events
         """
-        event_list = event_list if isinstance(event_list, (List, Tuple)) else [event_list]
-        for event in event_list:
-            self.events.setdefault(event, {})[func.__name__] = {"func": func, "on_publish": on_publish}
+        event_type_list = event_type_list if isinstance(event_type_list, (List, Tuple)) else [event_type_list]
+        for event in event_type_list:
+            self.event_handlers.setdefault(event, []).append(EventHandler(func, on_publish=on_publish))
 
-    def unsubscribe(self, event, func: Callable):
+    def unsubscribe(self, event_type, func: Callable):
         """
         Unregistered an event handler for an event
         """
-        self.events[event][func.__name__] = None
-
-    def emit(self, event):
-        """
-        Emit a specific event. Call all sync handlers for this
-        specific event and add the event to queue so that async
-        handlers can be called when 'publish_event' function is called.
-
-        :param event: Event object to emit
-        """
-        queue = event_queue.get()
-        queue.append(event)
-        for name, handler in self.events.get(type(event), {}).items():
-            if handler is not None and not handler["on_publish"]:
-                handler["func"](event)
-
-    def init_queue(self):
-        event_queue.set([])
-
-    def clear_queue(self):
-        event_queue.get().clear()
+        self.event_handlers[event_type] = list(
+            filter(lambda handler: handler.func != func, self.event_handlers[event_type]))
 
     def async_handler(self, *args):
         """
@@ -70,19 +75,15 @@ class EventBus:
 
         return decorate
 
-    async def publish_events(self):
-        """
-        WARNING: The queue has to be initialized first
+    async def handle_async_events(self, events: Iterable):
+        coroutines = []
+        for event in events:
+            for handler in self.event_handlers.get(type(event), []):
+                if handler.on_publish:
+                    coroutines.append(handler.async_handle(event))
+        await asyncio.gather(*coroutines)
 
-        Call all async handlers which are in the queue.
-        This reset the queue of events.
-        """
-        for event in event_queue.get():
-            for name, handler in self.events[type(event)].items():
-                if handler is not None and handler['on_publish']:
-                    if inspect.iscoroutinefunction(handler["func"]):
-                        await handler["func"](event)
-                    else:
-                        loop = asyncio.get_event_loop()
-                        await loop.run_in_executor(None, functools.partial(handler["func"], event))
-        self.clear_queue()
+    def handle_event(self, event):
+        for handler in self.event_handlers.get(type(event), []):
+            if not handler.on_publish:
+                handler.handle(event)
