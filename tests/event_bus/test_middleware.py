@@ -1,7 +1,8 @@
 import pytest
 from pytest_mock import MockerFixture
 
-from fast_alchemy.event_bus import local_event_bus, event_bus_store
+from fast_alchemy.event_bus.contexts import event_bus_store
+from fast_alchemy.event_bus.bus import local_event_bus
 from fast_alchemy.event_bus.middleware import EventBusMiddleware
 
 

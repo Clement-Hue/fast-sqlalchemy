@@ -1,7 +1,6 @@
 import asyncio
 
-from fast_alchemy.event_bus import event_bus_store
-from fast_alchemy.event_bus.contexts import event_queue
+from fast_alchemy.event_bus.contexts import event_queue, event_bus_store
 
 
 def emit(event):

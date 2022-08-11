@@ -87,3 +87,6 @@ class LocalEventBus(EventBus):
         for handler in self.event_handlers.get(type(event), []):
             if not handler.on_publish:
                 handler.handle(event)
+
+
+local_event_bus = LocalEventBus()
