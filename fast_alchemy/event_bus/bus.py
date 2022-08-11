@@ -1,7 +1,8 @@
-import inspect, asyncio, functools
+import inspect, asyncio, functools, logging
 from abc import ABC, abstractmethod
 from typing import Callable, List, Tuple, Iterable
 
+logger = logging.getLogger(__name__)
 
 class EventHandler:
     def __init__(self, func, on_publish=False):
@@ -76,6 +77,7 @@ class LocalEventBus(EventBus):
         return decorate
 
     async def handle_async_events(self, events: Iterable):
+        logger.debug(f"local event bus call with {events}, handlers {self.event_handlers}")
         coroutines = []
         for event in events:
             for handler in self.event_handlers.get(type(event), []):
