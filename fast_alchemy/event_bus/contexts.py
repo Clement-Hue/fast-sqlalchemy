@@ -1,6 +1,6 @@
 import contextlib, logging
 from contextvars import ContextVar
-from typing import List
+from typing import Set
 
 from fast_alchemy.event_bus.bus import EventBus
 logger = logging.getLogger(__name__)
@@ -17,4 +17,4 @@ def event_queue_ctx():
     event_queue.reset(token)
 
 
-event_bus_store: List[EventBus] = []
+event_bus_store: Set[EventBus] = set()

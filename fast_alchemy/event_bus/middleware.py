@@ -15,10 +15,7 @@ class EventBusMiddleware:
         self.register_handlers(handlers=handlers)
 
     def register_handlers(self, handlers: Iterable):
-        event_bus_store.append(*handlers)
-
-    def __del__(self):
-        event_bus_store.clear()
+        event_bus_store.add(*handlers)
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] not in ["http", "websocket"]:

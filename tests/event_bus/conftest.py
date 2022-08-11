@@ -9,8 +9,9 @@ from fast_alchemy.event_bus.contexts import event_bus_store
 @pytest.fixture
 def event_bus_store_ctx():
     @contextlib.contextmanager
-    def inner(bus: Iterable):
-        event_bus_store.append(*bus)
+    def inner(bus: Iterable = None):
+        if bus:
+            event_bus_store.add(*bus)
         yield
         event_bus_store.clear()
     return inner
