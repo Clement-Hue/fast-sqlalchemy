@@ -14,6 +14,7 @@ python-dotenv = "^0.20.0"
 PyJWT = "^2.4.0"
 pyhumps = "^3.7.2"
 html2text = "^2020.1.16"
+Jinja2 = "^3.1.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"
