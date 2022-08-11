@@ -21,7 +21,7 @@ async def test_publish_events(mocker: MockerFixture, event_bus_store_ctx):
     with event_bus_store_ctx():
         middleware = EventBusMiddleware(mocker.AsyncMock(), [event_bus])
         assert len(event_bus_store) == 1
-        await middleware({"type": "http"}, mocker.MagicMock(),mocker.MagicMock())
+        await middleware.dispatch(mocker.MagicMock(), mocker.AsyncMock())
         publish_mock.assert_called()
 
 
