@@ -16,8 +16,9 @@ class EventHandler:
         if inspect.iscoroutinefunction(self.func):
             await self.func(event)
         else:
-            loop = asyncio.get_running_loop()
-            await loop.run_in_executor(None, functools.partial(self.func, event))
+            async def to_async():
+                return self.func(event)
+            await to_async()
 
 
 class EventBus(ABC):
