@@ -1,7 +1,7 @@
 import asyncio
 import logging
 
-from fast_alchemy.event_bus.contexts import event_queue, event_bus_store
+from fast_alchemy.event_bus.contexts import _event_queue, event_bus_store
 
 logger = logging.getLogger(__name__)
 
@@ -13,8 +13,8 @@ def emit(event):
 
     :param event: Event object to emit
     """
-    logger.debug(f"event {event} emitted of type {type(event)}")
-    queue = event_queue.get()
+    logger.debug(f"emit {event}")
+    queue = _event_queue.get()
     queue.append(event)
     for event_bus in event_bus_store:
         event_bus.handle_event(event)
@@ -27,6 +27,6 @@ async def publish_events():
     This reset the queue of events.
     """
     logger.debug("publishing events")
-    events = event_queue.get()
+    events = _event_queue.get()
     await asyncio.gather(*[event_bus.handle_async_events(events) for
                          event_bus in event_bus_store])

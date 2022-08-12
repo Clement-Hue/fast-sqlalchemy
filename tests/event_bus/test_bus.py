@@ -1,7 +1,7 @@
 import pytest, asyncio
 from pytest_mock import MockerFixture
 
-from fast_alchemy.event_bus.contexts import event_queue, event_queue_ctx
+from fast_alchemy.event_bus.contexts import _event_queue, event_queue_ctx
 from fast_alchemy.event_bus.bus import LocalEventBus
 from fast_alchemy.event_bus.emit import emit, publish_events
 
@@ -70,7 +70,7 @@ async def test_event_queue(mocker: MockerFixture, event_bus_store_ctx):
         await publish_events()
         assert handler.call_count == 2
         assert handler.call_args_list == [((e1,),), ((e2,),)]
-    assert event_queue.get() == []
+    assert _event_queue.get() == []
 
 @pytest.mark.asyncio
 async def test_multiple_event_handler_decorator(event_bus_store_ctx):
@@ -89,9 +89,9 @@ async def test_multiple_event_handler_decorator(event_bus_store_ctx):
     with event_queue_ctx(), event_bus_store_ctx([event_bus]):
         e = CustomEvent()
         emit(e)
-        assert event_queue.get() == [e]
+        assert _event_queue.get() == [e]
         await publish_events()
-    assert event_queue.get() == []
+    assert _event_queue.get() == []
 
 
 def test_unsubscribe(mocker: MockerFixture):
@@ -126,7 +126,7 @@ async def test_event_queue_context():
     async def coroutine():
         with event_queue_ctx():
             emit(e1)
-            assert len(event_queue.get()) == 1
-            assert event_queue.get() == [e1]
+            assert len(_event_queue.get()) == 1
+            assert _event_queue.get() == [e1]
 
     await asyncio.gather(coroutine(), coroutine())

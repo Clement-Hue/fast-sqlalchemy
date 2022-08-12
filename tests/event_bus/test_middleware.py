@@ -9,7 +9,7 @@ from fast_alchemy.event_bus.middleware import EventBusMiddleware
 def test_register_handlers(mocker: MockerFixture, event_bus_store_ctx):
     assert len(event_bus_store) == 0
     with event_bus_store_ctx():
-        middleware = EventBusMiddleware(mocker.MagicMock(), [local_event_bus])
+        middleware = EventBusMiddleware(mocker.Mock(), [local_event_bus])
         assert len(event_bus_store) == 1
         assert list(event_bus_store)[0] == local_event_bus
 
@@ -20,7 +20,7 @@ async def test_publish_events(mocker: MockerFixture, event_bus_store_ctx):
     event_bus = mocker.AsyncMock()
     response = mocker.MagicMock(status_code=201)
     with event_bus_store_ctx():
-        middleware = EventBusMiddleware(mocker.AsyncMock(), [event_bus])
+        middleware = EventBusMiddleware(mocker.Mock(), [event_bus])
         assert len(event_bus_store) == 1
         await middleware.dispatch(mocker.MagicMock(), mocker.AsyncMock(return_value=response))
         publish_mock.assert_called()
@@ -32,7 +32,7 @@ async def test_publish_not_call_if_status_is_above_400(mocker: MockerFixture, ev
     response = mocker.MagicMock(status_code=400)
 
     with event_bus_store_ctx():
-        middleware = EventBusMiddleware(mocker.AsyncMock(), [event_bus])
+        middleware = EventBusMiddleware(mocker.Mock(), [event_bus])
         await middleware.dispatch(mocker.MagicMock(), mocker.AsyncMock(return_value=response))
         publish_mock.assert_not_called()
 

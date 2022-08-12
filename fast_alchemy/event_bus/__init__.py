@@ -1,2 +1,2 @@
-from .emit import emit, publish_events
+from .emit import emit
 from .bus import local_event_bus
