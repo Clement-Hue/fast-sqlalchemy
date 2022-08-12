@@ -24,4 +24,14 @@ async def test_publish_events(mocker: MockerFixture, event_bus_store_ctx):
         await middleware.dispatch(mocker.MagicMock(), mocker.AsyncMock())
         publish_mock.assert_called()
 
+@pytest.mark.asyncio
+async def test_publish_not_call_if_status_is_above_400(mocker: MockerFixture, event_bus_store_ctx):
+    publish_mock = mocker.patch("fast_alchemy.event_bus.middleware.publish_events")
+    event_bus = mocker.AsyncMock()
+    response = mocker.MagicMock(status_code=400)
+    call_next = mocker.AsyncMock(return_value=response)
+    with event_bus_store_ctx():
+        middleware = EventBusMiddleware(mocker.AsyncMock(), [event_bus])
+        await middleware.dispatch(mocker.MagicMock(), call_next)
+        publish_mock.assert_not_called()
 

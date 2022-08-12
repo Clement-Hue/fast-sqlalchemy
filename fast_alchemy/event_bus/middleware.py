@@ -21,6 +21,7 @@ class EventBusMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint):
         with event_queue_ctx():
             response = await call_next(request)
-            await publish_events()
+            if response.status_code < 400:
+                await publish_events()
         return response
 
