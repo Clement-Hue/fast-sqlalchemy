@@ -7,7 +7,7 @@ authors = ["Clement_Hue <clementhue@hotmail.fr>"]
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"
 fastapi = "^0.79.0"
-SQLAlchemy = "1.4.27"
+SQLAlchemy = "^1.4.40"
 factory-boy = "^3.2.1"
 alembic = "^1.8.1"
 python-dotenv = "^0.20.0"
