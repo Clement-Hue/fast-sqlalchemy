@@ -13,7 +13,7 @@ class DatabaseMiddleware(BaseHTTPMiddleware):
         super().__init__(app)
         self.url = url
         self.engine = create_engine(self.url, **engine_options)
-        db.session_factory = sessionmaker(bind=self.engine, autoflush=autoflush, autocommit=autocommit)
+        db._session_factory = sessionmaker(bind=self.engine, autoflush=autoflush, autocommit=autocommit)
 
     async def dispatch( self, request: Request, call_next: RequestResponseEndpoint ) -> Response:
         with db.session_ctx():
