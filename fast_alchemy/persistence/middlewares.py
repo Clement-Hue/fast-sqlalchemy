@@ -1,21 +1,17 @@
-from sqlalchemy import create_engine
-from sqlalchemy.engine import URL
-from sqlalchemy.orm import sessionmaker
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.requests import Request
 from starlette.responses import Response
 from starlette.types import ASGIApp
-from fast_alchemy.persistence.database import db
+from fast_alchemy.persistence.database import  Database
+
 
 class DatabaseMiddleware(BaseHTTPMiddleware):
-    def __init__(self, app: ASGIApp, url: URL | str, autoflush=False, autocommit=False, **engine_options):
+    def __init__(self, app: ASGIApp, db: Database):
         super().__init__(app)
-        self.url = url
-        self.engine = create_engine(self.url, **engine_options)
-        db._session_factory = sessionmaker(bind=self.engine, autoflush=autoflush, autocommit=autocommit)
+        self.db = db
 
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
-        with db.session_ctx():
+        with self.db.session_ctx():
             return await call_next(request)
 
 
@@ -27,11 +23,12 @@ class AutocommitMiddleware(BaseHTTPMiddleware):
     If the status code is above 400, the commit is cancelled.
     """
 
-    def __init__(self, app: ASGIApp):
+    def __init__(self, app: ASGIApp, db: Database):
         super().__init__(app)
+        self.db = db
 
     async def dispatch( self, request: Request, call_next: RequestResponseEndpoint ) -> Response:
         response = await call_next(request)
         if response.status_code < 400:
-            db.session.commit()
+            self.db.session.commit()
         return response

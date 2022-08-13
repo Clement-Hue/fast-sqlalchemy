@@ -1,13 +1,16 @@
 import contextlib
 
+from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from .context import _session
 
 
 class Database:
-    def __init__(self, session_factory: sessionmaker = None):
-        self._session_factory = session_factory
+    def __init__(self, url, autoflush=False, autocommit=False, **engine_options):
+        self.url = url
+        self.engine = create_engine(self.url, **engine_options)
+        self._session_factory = sessionmaker(bind=self.engine, autoflush=autoflush, autocommit=autocommit)
 
     @property
     def session(self) -> Session:
@@ -28,4 +31,3 @@ class Database:
             _session.reset(token)
 
 
-db = Database()
