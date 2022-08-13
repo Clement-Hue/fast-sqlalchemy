@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fast-alchemy"
-version = "0.4.0"
+version = "0.4.1"
 description = "Framework for Orthoresa"
 authors = ["Clement_Hue <clementhue@hotmail.fr>"]
 
@@ -26,6 +26,8 @@ pysqlite3 = "^0.4.7"
 [tool.pytest.ini_options]
 addopts = "-s  --color=yes"
 
+[tool.poetry.plugins]
+pytest11 = { fast_alchemy = "fast_alchemy.testing.pytest" }
 
 [build-system]
 requires = ["poetry-core>=1.0.8"]

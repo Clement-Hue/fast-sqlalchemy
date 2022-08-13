@@ -1,4 +1,3 @@
-import logging
 from typing import Iterable
 
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
@@ -7,7 +6,6 @@ from starlette.types import ASGIApp
 
 from fast_alchemy.event_bus.contexts import event_queue_ctx, event_bus_store
 from fast_alchemy.event_bus.emit import publish_events
-logger = logging.getLogger(__name__)
 
 
 class EventBusMiddleware(BaseHTTPMiddleware):

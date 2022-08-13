@@ -5,9 +5,7 @@ from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoin
 from starlette.requests import Request
 from starlette.responses import Response
 from starlette.types import ASGIApp
-
 from fast_alchemy.persistence.database import db
-
 
 class DatabaseMiddleware(BaseHTTPMiddleware):
     def __init__(self, app: ASGIApp, url: URL | str, autoflush=False, autocommit=False, **engine_options):
@@ -21,13 +19,14 @@ class DatabaseMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
 
 
-"""
-@WARNING Make sure to use this middleware with the DatabaseMiddleware after it in the
-middleware stack.
-This middleware autocommit at the end of the request. 
-If the status code is above 400, the commit is cancelled. 
-"""
 class AutocommitMiddleware(BaseHTTPMiddleware):
+    """
+    @WARNING Make sure to use this middleware with the DatabaseMiddleware after it in the
+    middleware stack.
+    This middleware autocommit at the end of the request.
+    If the status code is above 400, the commit is cancelled.
+    """
+
     def __init__(self, app: ASGIApp):
         super().__init__(app)
 
