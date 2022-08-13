@@ -1,4 +1,5 @@
 import confuse, os,re, logging
+from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
 
@@ -20,11 +21,12 @@ class Configuration:
                 logger.warning(f"Environment variable {group} not found")
         return value
 
-    def load_config(self):
+    def load_config(self, env_path:str = None ):
+        load_dotenv(env_path)
         sources = [confuse.YamlSource(os.path.join(self.config_dir, file))
                    for file in os.listdir(self.config_dir) if file.endswith((".yaml", ".yml"))]
         self._confuse = confuse.RootView(sources)
 
     def __getitem__(self, item):
-        assert self._confuse, "Make sure to call load_config before accessing configuration"
+        assert self._confuse, "Make sure to call load_config before accessing the configuration"
         return self._confuse[item]

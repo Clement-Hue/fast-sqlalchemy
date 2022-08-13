@@ -16,7 +16,5 @@ def test_get_yaml_config(config_test):
     config_test.load_config()
     assert config_test["db"].get() == "test_db"
 def test_yaml_config_with_env(config_test):
-    load_dotenv(os.path.join(root_dir, ".env"))
-    config_test.load_config()
+    config_test.load_config(os.path.join(root_dir, ".env"))
     assert config_test["env_key"].get() == "var_foo.bar"
-
