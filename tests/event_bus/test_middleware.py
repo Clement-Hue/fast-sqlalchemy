@@ -1,17 +1,18 @@
 import pytest
 from pytest_mock import MockerFixture
 
+from fast_alchemy.event_bus.bus import LocalEventBus
 from fast_alchemy.event_bus.contexts import event_bus_store
-from fast_alchemy.event_bus.bus import local_event_bus
 from fast_alchemy.event_bus.middlewares import EventBusMiddleware
 
 
 def test_register_handlers(mocker: MockerFixture, event_bus_store_ctx):
+    bus = LocalEventBus()
     assert len(event_bus_store) == 0
     with event_bus_store_ctx():
-        middleware = EventBusMiddleware(mocker.Mock(), [local_event_bus])
+        EventBusMiddleware(mocker.Mock(), [bus])
         assert len(event_bus_store) == 1
-        assert list(event_bus_store)[0] == local_event_bus
+        assert list(event_bus_store)[0] == bus
 
 @pytest.mark.asyncio
 async def test_publish_events(mocker: MockerFixture, event_bus_store_ctx):

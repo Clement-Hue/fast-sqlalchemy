@@ -92,4 +92,3 @@ class LocalEventBus(EventBus):
                 handler.handle(event)
 
 
-local_event_bus = LocalEventBus()
