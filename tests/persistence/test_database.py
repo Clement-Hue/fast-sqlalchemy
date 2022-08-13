@@ -1,5 +1,6 @@
 import pytest
 from pytest_mock import MockerFixture
+from sqlalchemy.engine import make_url
 from sqlalchemy.orm import Session, sessionmaker
 
 from fast_alchemy.persistence.context import _session
@@ -41,6 +42,6 @@ def test_close_session_even_with_exception(db, mocker: MockerFixture):
 
 def test_set_session_config():
     db = Database("sqlite://", echo=True)
-    assert db.url == "sqlite://"
+    assert db.url == make_url( "sqlite://")
     assert db.engine.echo is True
     assert isinstance(db._session_factory, sessionmaker)
