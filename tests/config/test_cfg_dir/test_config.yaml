@@ -1,1 +1,2 @@
-db: test
+env_key: var_${ENV_1}.${ENV_2}
+db: test_db
