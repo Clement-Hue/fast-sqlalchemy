@@ -19,3 +19,4 @@ def test_yaml_config_with_env(config_test):
     load_dotenv(os.path.join(root_dir, ".env"))
     config_test.load_config()
     assert config_test["env_key"].get() == "var_foo.bar"
+

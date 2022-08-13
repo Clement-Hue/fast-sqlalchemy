@@ -26,4 +26,5 @@ class Configuration:
         self._confuse = confuse.RootView(sources)
 
     def __getitem__(self, item):
+        assert self._confuse, "Make sure to call load_config before accessing configuration"
         return self._confuse[item]
