@@ -6,6 +6,7 @@ from sqlalchemy.exc import ResourceClosedError
 from fast_alchemy.persistence.database import Database, _session
 from fast_alchemy.testing.db_client import TestDatabase
 from tests.testing.factories_stub import UserFactory, AccountFactory, Base, User
+from tests.testing import factories_stub
 import sqlalchemy_utils
 
 
@@ -19,7 +20,7 @@ def test_db_engine(db):
     assert isinstance(test_db.engine, Engine)
 
 def test_load_factory(db):
-    test_db = TestDatabase(db=db, factories_module="tests.testing.factories_stub")
+    test_db = TestDatabase(db=db, factories_module=[factories_stub])
     assert test_db.factories == [AccountFactory, UserFactory]
 
 def test_db_client_create_database(db, mocker:MockerFixture):
@@ -43,7 +44,7 @@ def test_db_client_release_resources(db, mocker: MockerFixture):
     drop_database.assert_called_with(db.url)
 
 def test_start_test_session(db):
-    test_db = TestDatabase(db=db, factories_module="tests.testing.factories_stub")
+    test_db = TestDatabase(db=db, factories_module=[factories_stub])
     with test_db.start_connection(Base.metadata):
         with test_db.start_session() as session:
             assert _session.get() == session

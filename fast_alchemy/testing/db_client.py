@@ -4,6 +4,7 @@ import contextlib
 import importlib
 import inspect
 import logging
+from types import ModuleType
 from typing import TYPE_CHECKING
 
 from factory.alchemy import SQLAlchemyModelFactory
@@ -20,7 +21,8 @@ logger = logging.getLogger(__name__)
 class TestDatabase:
     __test__ = False
 
-    def __init__(self, db: Database, factories_module=None, workerinput=None, **engine_options):
+    def __init__(self, db: Database, factories_module: list[ModuleType] = None, workerinput=None,
+                 **engine_options):
         self.db = db
         self._workerinput = workerinput
         self.url = self.db.url.set(database="test_" + self.db.url.database) if self.db.url.database else self.db.url
@@ -70,11 +72,12 @@ class TestDatabase:
             sqlalchemy_utils.drop_database(self.url)
         logger.debug("Releasing resources")
 
-
-    def _load_factories(self, factories_modules: str):
-        return [cls for _, cls in inspect.getmembers(importlib.import_module(factories_modules),
-                                                     inspect.isclass)
-                if issubclass(cls, SQLAlchemyModelFactory) and cls != SQLAlchemyModelFactory]
+    def _load_factories(self, factories_modules: list[ModuleType]):
+        factories = []
+        for module in factories_modules:
+            factories.extend([cls for _, cls in inspect.getmembers(module, inspect.isclass)
+                               if issubclass(cls, SQLAlchemyModelFactory) and cls != SQLAlchemyModelFactory])
+        return factories
 
     @contextlib.contextmanager
     def start_session(self):
@@ -89,7 +92,8 @@ class TestDatabase:
 
             dialect_name = self.url.get_dialect().name
             if dialect_name != "sqlite":
-                nested = self.connection.begin_nested() # allow rollback within the test
+                nested = self.connection.begin_nested()  # allow rollback within the test
+
                 @event.listens_for(session, "after_transaction_end")
                 def end_savepoint(session, transaction):
                     nonlocal nested
