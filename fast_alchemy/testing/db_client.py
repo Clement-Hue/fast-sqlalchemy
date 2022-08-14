@@ -29,7 +29,14 @@ class TestDatabase:
         self.connection = None
         logger.debug("Engine and sessionmaker created")
 
-    def create_test_database(self, metadata: MetaData):
+    @contextlib.contextmanager
+    def start_connection(self, metadata: MetaData, drop_database=True):
+        """
+        Start connection to the database. Create the database if it doesn't exist and
+        release connection at the end, optionally drop the database
+        :param metadata: The sqlalchemy metadata
+        :param drop_database: drop or not the database when the connection is released
+        """
         try:
             if not sqlalchemy_utils.database_exists(self.url):
                 sqlalchemy_utils.create_database(self.url)
@@ -37,6 +44,8 @@ class TestDatabase:
             self.connection = self.engine.connect()
         except InternalError:
             pass
+        yield self
+        self.release(drop_database=drop_database)
 
     def _create_engine(self, **engine_options):
         engine = create_engine(self.url, **engine_options)
@@ -68,7 +77,7 @@ class TestDatabase:
                 if issubclass(cls, SQLAlchemyModelFactory) and cls != SQLAlchemyModelFactory]
 
     @contextlib.contextmanager
-    def start_test_session(self):
+    def start_session(self):
         assert self.connection, "Make sure to create the database before creating a testing session"
         transaction = self.connection.begin()
         logger.debug("Transaction has started")
