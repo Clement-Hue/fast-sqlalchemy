@@ -1,7 +1,5 @@
 from __future__ import annotations
-
 import contextlib
-import importlib
 import inspect
 import logging
 from types import ModuleType
@@ -21,12 +19,12 @@ logger = logging.getLogger(__name__)
 class TestDatabase:
     __test__ = False
 
-    def __init__(self, db: Database, factories_module: list[ModuleType] = None, workerinput=None,
+    def __init__(self, db: Database, factories_modules: list[ModuleType] = None, workerinput=None,
                  **engine_options):
         self.db = db
         self._workerinput = workerinput
         self.url = self.db.url.set(database="test_" + self.db.url.database) if self.db.url.database else self.db.url
-        self.factories = self._load_factories(factories_module) if factories_module else None
+        self.factories = self._load_factories(factories_modules) if factories_modules else None
         self.engine = self._create_engine(**engine_options)
         self.connection = None
         logger.debug("Engine and sessionmaker created")
@@ -62,7 +60,7 @@ class TestDatabase:
 
     def release(self, drop_database=True):
         """
-        Release connection, engine and dropping the current testing database
+        Release connection, engine and optionally dropping the current testing database
         """
         if self.connection:
             self.connection.close()
@@ -82,7 +80,8 @@ class TestDatabase:
 
     @contextlib.contextmanager
     def start_session(self):
-        assert self.connection, "Make sure to create the database before creating a testing session"
+        assert self.connection, "Make sure to create a connection to the database " \
+                                "before creating a testing session"
         transaction = self.connection.begin()
         logger.debug("Transaction has started")
         self.db._session_factory.configure(bind=self.connection)

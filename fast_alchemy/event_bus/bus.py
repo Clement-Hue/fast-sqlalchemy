@@ -1,4 +1,4 @@
-import inspect, asyncio, functools, logging
+import inspect, asyncio, logging
 from abc import ABC, abstractmethod
 from typing import Callable, List, Tuple, Iterable
 
