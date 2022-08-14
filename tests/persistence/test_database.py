@@ -5,6 +5,11 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from fast_alchemy.persistence.context import _session
 from fast_alchemy.persistence.database import Database
+from fast_alchemy.persistence.repository import EntityRepository
+
+
+class UserRepository(EntityRepository):
+    pass
 
 @pytest.fixture()
 def db():
@@ -42,7 +47,17 @@ def test_close_session_even_with_exception(db, mocker: MockerFixture):
     session.close.assert_called()
 
 def test_set_session_config():
-    db = Database("sqlite://", echo=True)
-    assert db.url == make_url( "sqlite://")
-    assert db.engine.echo is True
-    assert isinstance(db._session_factory, sessionmaker)
+    test_db = Database("sqlite://", echo=True)
+    assert test_db.url == make_url( "sqlite://")
+    assert test_db.engine.echo is True
+    assert isinstance(test_db._session_factory, sessionmaker)
+
+def test_register_repository():
+    test_db = Database("sqlite://", repositories=[UserRepository])
+    assert isinstance(test_db.repositories[UserRepository], UserRepository)
+    assert isinstance(test_db.get_repository(UserRepository), UserRepository)
+
+def test_repository_not_registered():
+    test_db = Database("sqlite://")
+    with pytest.raises(RuntimeError):
+        test_db.get_repository(UserRepository)
