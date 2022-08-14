@@ -60,3 +60,9 @@ def test_start_test_session(db):
     test_db.__del__()
     with pytest.raises(ResourceClosedError):
         UserFactory(name="Roger")
+
+def test_error_if_creating_session_without_db(db):
+    test_db = TestDatabase(db=db)
+    with pytest.raises(AssertionError):
+        with test_db.start_test_session():
+            pass

@@ -23,13 +23,14 @@ class TestDatabase:
         self.url = self.db.url.set(database="test_" + self.db.url.database) if self.db.url.database else self.db.url
         self.factories = self._load_factories(factories_module) if factories_module else None
         self.engine = self._create_engine(**engine_options)
-        self.connection = self.engine.connect()
+        self.connection = None
 
     def create_test_database(self, metadata: MetaData):
         try:
             if not sqlalchemy_utils.database_exists(self.url):
                 sqlalchemy_utils.create_database(self.url)
             metadata.create_all(bind=self.engine)
+            self.connection = self.engine.connect()
         except InternalError:
             pass
 
@@ -43,7 +44,8 @@ class TestDatabase:
         return engine
 
     def __del__(self):
-        self.connection.close()
+        if self.connection:
+            self.connection.close()
         self.engine.dispose()
         sqlalchemy_utils.drop_database(self.url)
 
@@ -54,6 +56,7 @@ class TestDatabase:
 
     @contextlib.contextmanager
     def start_test_session(self):
+        assert self.connection, "Make sure to create the database before creating a testing session"
         transaction = self.connection.begin()
         self.db._session_factory.configure(bind=self.connection)
         with self.db.session_ctx() as session:
