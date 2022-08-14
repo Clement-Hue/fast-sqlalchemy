@@ -5,11 +5,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from fast_alchemy.persistence.context import _session
 from fast_alchemy.persistence.database import Database
-from fast_alchemy.persistence.repository import EntityRepository
 
-
-class UserRepository(EntityRepository):
-    pass
 
 @pytest.fixture()
 def db():
@@ -52,12 +48,3 @@ def test_set_session_config():
     assert test_db.engine.echo is True
     assert isinstance(test_db._session_factory, sessionmaker)
 
-def test_register_repository():
-    test_db = Database("sqlite://", repositories=[UserRepository])
-    assert isinstance(test_db.repositories[UserRepository], UserRepository)
-    assert isinstance(test_db.get_repository(UserRepository), UserRepository)
-
-def test_repository_not_registered():
-    test_db = Database("sqlite://")
-    with pytest.raises(RuntimeError):
-        test_db.get_repository(UserRepository)
