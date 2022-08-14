@@ -36,6 +36,7 @@ class TestDatabase:
         """
         Start connection to the database. Create the database if it doesn't exist and
         release connection at the end, optionally drop the database
+
         :param metadata: The sqlalchemy metadata
         :param drop_database: drop or not the database when the connection is released
         """

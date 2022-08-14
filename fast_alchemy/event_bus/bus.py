@@ -49,30 +49,32 @@ class LocalEventBus(EventBus):
         self.event_handlers[event_type] = list(
             filter(lambda handler: handler.func != func, self.event_handlers[event_type]))
 
-    def async_handler(self, *args):
+    def async_handler(self, *events):
         """
         Decorator of function which add a handler to a specific event.
         The handler is called when publish_event method is called.
         The handler can be a coroutine
+
         :param events: The events to listen on
         """
 
         def decorate(fun: Callable):
-            self.subscribe(args, fun, on_publish=True)
+            self.subscribe(events, fun, on_publish=True)
             return fun
 
         return decorate
 
-    def handler(self, *args):
+    def handler(self, *events):
         """
         Decorator of function which add a handler to a specific event.
         The handler is called once the event is emitted.
         The handler can't be a coroutine
+
         :param events: The events to listen on
         """
 
         def decorate(fun: Callable):
-            self.subscribe(args, fun, on_publish=False)
+            self.subscribe(events, fun, on_publish=False)
             return fun
 
         return decorate
