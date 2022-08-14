@@ -13,8 +13,9 @@ def db():
 
 def test_create_session_ctx(db):
     assert _session.get() is None
-    with db.session_ctx():
+    with db.session_ctx() as session:
         assert isinstance(_session.get(), Session)
+        assert session == _session.get()
     assert _session.get() is None
 
 def test_session_ctx_close_session(db, mocker: MockerFixture):

@@ -26,7 +26,7 @@ class Database:
         session = self._session_factory()
         token = _session.set(session)
         try:
-            yield
+            yield session
         finally:
             session.close()
             _session.reset(token)
