@@ -3,6 +3,7 @@ from __future__ import annotations
 import contextlib
 import importlib
 import inspect
+import logging
 from typing import TYPE_CHECKING
 
 from factory.alchemy import SQLAlchemyModelFactory
@@ -12,6 +13,8 @@ import sqlalchemy_utils
 
 if TYPE_CHECKING:
     from fast_alchemy.persistence.database import Database
+
+logger = logging.getLogger(__name__)
 
 
 class TestDatabase:
@@ -24,6 +27,7 @@ class TestDatabase:
         self.factories = self._load_factories(factories_module) if factories_module else None
         self.engine = self._create_engine(**engine_options)
         self.connection = None
+        logger.debug("Engine and sessionmaker created")
 
     def create_test_database(self, metadata: MetaData):
         try:
@@ -38,6 +42,7 @@ class TestDatabase:
         engine = create_engine(self.url, **engine_options)
         # Put a suffix like _gw0, _gw1 etc on xdist processes
         if engine.url.database != ':memory:' and self._workerinput is not None:
+            logger.debug("Creating engine for each worker")
             xdist_suffix = self._workerinput.get('workerid')
             xdist_url = self.url.set(database='{}_{}'.format(engine.url.database, xdist_suffix))
             engine = create_engine(xdist_url, **engine_options)  # override engine
@@ -48,6 +53,7 @@ class TestDatabase:
             self.connection.close()
         self.engine.dispose()
         sqlalchemy_utils.drop_database(self.url)
+        logger.debug("Releasing connection, engine, and dropping the database")
 
     def _load_factories(self, factories_modules: str):
         return [cls for _, cls in inspect.getmembers(importlib.import_module(factories_modules),
@@ -58,6 +64,7 @@ class TestDatabase:
     def start_test_session(self):
         assert self.connection, "Make sure to create the database before creating a testing session"
         transaction = self.connection.begin()
+        logger.debug("Transaction has started")
         self.db._session_factory.configure(bind=self.connection)
         with self.db.session_ctx() as session:
             for factory in self.factories or []:
@@ -75,3 +82,4 @@ class TestDatabase:
 
             yield session
         transaction.rollback()
+        logger.debug("Transaction rollback")
