@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fast-alchemy"
-version = "0.6.8"
+version = "0.6.9"
 description = "Framework for Orthoresa"
 authors = ["Clement_Hue <clementhue@hotmail.fr>"]
 

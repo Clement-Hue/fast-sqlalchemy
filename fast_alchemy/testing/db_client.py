@@ -21,6 +21,14 @@ class TestDatabase:
 
     def __init__(self, db: Database, factories_modules: list[ModuleType] = None, workerinput=None,
                  **engine_options):
+        """
+        Create a testing database client.
+
+        :param db: The Database object use in the application;
+        :param factories_modules: Optionally pass modules which contains factories from factory_boy library to wire them when creating a testing session.
+        :param workerinput: The workerinput get from the request.config object from pytest when using pytest-xdist library, so that every worker have their own isolated database.
+        :param engine_options: Sqlalchemy engine parameters.
+        """
         self.db = db
         self._workerinput = workerinput
         self.url = self.db.url.set(database="test_" + self.db.url.database) if self.db.url.database else self.db.url
@@ -33,7 +41,7 @@ class TestDatabase:
     def start_connection(self, metadata: MetaData, drop_database=True):
         """
         Start connection to the database. Create the database if it doesn't exist and
-        release connection at the end, optionally drop the database
+        release connection at the end, optionally drop the database.
 
         :param metadata: The sqlalchemy metadata
         :param drop_database: drop or not the database when the connection is released
@@ -80,6 +88,10 @@ class TestDatabase:
 
     @contextlib.contextmanager
     def start_session(self):
+        """
+        Create a session wrapped in a transaction so that every commit to the database
+        will be rollback in order to have isolated tests.
+        """
         assert self.connection, "Make sure to create a connection to the database " \
                                 "before creating a testing session"
         transaction = self.connection.begin()

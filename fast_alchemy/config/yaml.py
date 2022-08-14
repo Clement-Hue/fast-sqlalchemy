@@ -1,4 +1,7 @@
 import confuse, os,re, logging
+
+from typing import Optional
+from confuse import RootView
 from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
@@ -6,7 +9,7 @@ logger = logging.getLogger(__name__)
 class Configuration:
     def __init__(self, config_dir=None):
         self.config_dir = config_dir
-        self._confuse = None
+        self._confuse: Optional[RootView] = None
         self.yaml_loader = confuse.yaml_util.Loader
         self.env_pattern = re.compile(r".*?\${(.*?)}")
         self.yaml_loader.add_implicit_resolver("!pathex", self.env_pattern ,None)
