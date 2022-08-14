@@ -48,12 +48,19 @@ class TestDatabase:
             engine = create_engine(xdist_url, **engine_options)  # override engine
         return engine
 
-    def __del__(self):
+    def release(self, drop_database=True):
+        """
+        Release connection, engine and dropping the current testing database
+        """
         if self.connection:
             self.connection.close()
+
         self.engine.dispose()
-        sqlalchemy_utils.drop_database(self.url)
-        logger.debug("Releasing connection, engine, and dropping the database")
+        if drop_database:
+            logger.debug("Drop database")
+            sqlalchemy_utils.drop_database(self.url)
+        logger.debug("Releasing resources")
+
 
     def _load_factories(self, factories_modules: str):
         return [cls for _, cls in inspect.getmembers(importlib.import_module(factories_modules),

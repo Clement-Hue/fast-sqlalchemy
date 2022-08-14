@@ -36,7 +36,7 @@ def test_db_client_release_resources(db, mocker: MockerFixture):
     test_db = TestDatabase(db=db)
     engine = mocker.patch.object(test_db, "engine")
     connection = mocker.patch.object(test_db, "connection")
-    test_db.__del__()
+    test_db.release()
     engine.dispose.assert_called()
     connection.close.assert_called()
     drop_database.assert_called_with(db.url)
@@ -57,7 +57,7 @@ def test_start_test_session(db):
         users = session.query(User).all()
         assert len(users) == 0
     assert _session.get() is None
-    test_db.__del__()
+    test_db.release()
     with pytest.raises(ResourceClosedError):
         UserFactory(name="Roger")
 
