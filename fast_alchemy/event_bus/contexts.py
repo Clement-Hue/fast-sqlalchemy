@@ -8,6 +8,8 @@ logger = logging.getLogger(__name__)
 
 _event_queue: ContextVar = ContextVar("event_queue", default=[])
 
+event_bus_store: Set[EventBus] = set()
+
 @contextlib.contextmanager
 def event_queue_ctx():
     logger.debug("event queue set")
@@ -17,4 +19,3 @@ def event_queue_ctx():
     _event_queue.reset(token)
 
 
-event_bus_store: Set[EventBus] = set()

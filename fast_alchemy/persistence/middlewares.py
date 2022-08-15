@@ -18,7 +18,7 @@ class DatabaseMiddleware(BaseHTTPMiddleware):
 class AutocommitMiddleware(BaseHTTPMiddleware):
     """
     @WARNING Make sure to use this middleware with the DatabaseMiddleware after it in the
-    middleware stack.
+    middlewares stack.
     This middleware autocommit at the end of the request.
     If the status code is above 400, the commit is cancelled.
     """
