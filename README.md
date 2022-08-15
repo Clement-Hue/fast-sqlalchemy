@@ -1,4 +1,4 @@
-# Welcom to fast-alchemy
+# Welcom to fast-sqlalchemy
 
 This project was first made to provide some tools to use Fastapi with SQLAlchemy with ease.
 ## Contents
