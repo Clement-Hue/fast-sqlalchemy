@@ -17,7 +17,7 @@ poetry add fast_alchemy
 ## The database middlewares
 Fast-alchemy provide multiple middlewares to use SQLAlchemy with Fastapi easily
 
-### Database middleware
+### the DatabaseMiddleware
 The main middleware is the database middleware which is made to provide a sqlalchemy session accessible throughout your application. We use the ContextVar api of python to have unique session in the context of each request.
 
 To use this middleware you must at first create a Database object where you must pass the url of your database and the engine options of SQLAlchemy:
@@ -49,6 +49,15 @@ with db.session_ctx():
     db.session.query(User).all()
 ```
 The middleware is actually using this contextmanager for each requests.
+
+### The AutocomitMiddleware
+The auto commit middleware as its name suggest is a middleware which automatically commit at the end of each request. It must be used with the database middleware and must be registered before otherwise it won't work:
+
+```python
+fastapi = Fastapi()
+fastapi.add_middleware(AutocommitMiddleware, db=db)
+fastapi.add_middleware(DatabaseMiddleware, db=db)
+```
 
 ## The event bus
 
@@ -92,14 +101,7 @@ After that you can emit events wherever in your Fastapi application:
 emit(EmailChanged(email=email))
 ```
 
-### The Autocomit middleware
-The auto commit middleware as its name suggest is a middleware which automatically commit at the end of each request. It must be used with the database middleware and must be registered before otherwise it won't work:
 
-```python
-fastapi = Fastapi()
-fastapi.add_middleware(AutocommitMiddleware, db=db)
-fastapi.add_middleware(DatabaseMiddleware, db=db)
-```
 
 ## The database testing class
 
@@ -135,6 +137,29 @@ def test_create_user(sqla_session):
 ```
 
 ## The yaml config reader
+
+Fast-alchemy provide a class named Configuration which allow you to have your application's configuration store in yaml files:
+
+```python
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+config = Configuration(os.path.join(ROOT_DIR, "config"))
+config.load_config(os.path.join(ROOT_DIR, ".env"))
+```
+When you creating the object you must specify the path of your configuration directory, this directory will contains all of your yaml files
+Then you can load these configurations file by calling __load_config__, this method accept an env_path which corresponds to a .env file.
+After that you can create your yaml configuration files. Note that you can use your environment variables within your yaml files, these variable will be parsed.
+
+```yaml
+project_name: ${PROJECT_NAME}
+secret_key: ${SECRET_KEY}
+local: fr_FR
+```
+Then you can have access to your configuration within your application like this:
+
+```python
+config["project_name"].get(str)
+```
+Note that, it's the library confuse which is used underneath, check out here to have more details https://github.com/beetbox/confuse
 
 ## Licence
 
