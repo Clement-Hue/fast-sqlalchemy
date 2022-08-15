@@ -112,7 +112,7 @@ emit(EmailChanged(email=email))
 
 ## The database testing class
 
-Fast-alchemy provide an utility class named TestDatabase which can be used to test your Fastapi application with SQLAlchemy with ease. This class allow you to have isolated test by having each test wrapped in a transaction that is rollback at the end of each test, so that each test have a fresh database.
+Fast-sqlalchemy provide an utility class named TestDatabase which can be used to test your Fastapi application with SQLAlchemy with ease. This class allow you to have isolated test by having each test wrapped in a transaction that is rollback at the end of each test, so that each test have a fresh database.
 
 To use it with pytest, you can simply create two fixtures.
 A primary fixture with a scope of 'session' which will create a connection to the database and create the database if it doesn't exist (A testing database is created with the same name of your application's databse prefixed with 'test_'). 
@@ -147,7 +147,7 @@ def test_create_user(sqla_session):
 
 ## The yaml config reader
 
-Fast-alchemy provide a class named Configuration which allow you to have your application's configuration store in yaml files:
+Fast-sqlalchemy provide a class named Configuration which allow you to have your application's configuration store in yaml files:
 
 ```python
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
