@@ -60,6 +60,7 @@ fastapi.add_middleware(DatabaseMiddleware, db=db)
 ```
 
 ## The event bus
+The even tbus provide you a way to emit event in your application and register handlers to handle them. This allow you to create an event-driven architecture for your application. 
 
 To use the event bus within your application, you must create at least one event bus
 and register the event bus middleware to the fastapi middlewares stack
