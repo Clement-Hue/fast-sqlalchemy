@@ -1,7 +1,7 @@
 import asyncio
 import logging
 
-from fast_alchemy.event_bus.contexts import _event_queue, event_bus_store
+from fast_sqlalchemy.event_bus.contexts import _event_queue, event_bus_store
 
 logger = logging.getLogger(__name__)
 

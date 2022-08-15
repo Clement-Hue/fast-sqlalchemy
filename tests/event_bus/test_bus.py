@@ -1,9 +1,9 @@
 import pytest, asyncio
 from pytest_mock import MockerFixture
 
-from fast_alchemy.event_bus.contexts import _event_queue, event_queue_ctx
-from fast_alchemy.event_bus.bus import LocalEventBus
-from fast_alchemy.event_bus.emit import emit, publish_events
+from fast_sqlalchemy.event_bus.contexts import _event_queue, event_queue_ctx
+from fast_sqlalchemy.event_bus.bus import LocalEventBus
+from fast_sqlalchemy.event_bus.emit import emit, publish_events
 
 
 def test_register_handler_with_event(mocker: MockerFixture):

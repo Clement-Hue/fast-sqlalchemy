@@ -3,8 +3,8 @@ from pytest_mock import MockerFixture
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import ResourceClosedError
 
-from fast_alchemy.persistence.database import Database, _session
-from fast_alchemy.testing.db_client import TestDatabase
+from fast_sqlalchemy.persistence.database import Database, _session
+from fast_sqlalchemy.testing.db_client import TestDatabase
 from tests.testing.factories_stub import UserFactory, AccountFactory, Base, User
 from tests.testing import factories_stub
 import sqlalchemy_utils

@@ -11,7 +11,7 @@ from sqlalchemy.exc import InternalError
 import sqlalchemy_utils
 
 if TYPE_CHECKING:
-    from fast_alchemy.persistence.database import Database
+    from fast_sqlalchemy.persistence.database import Database
 
 logger = logging.getLogger(__name__)
 

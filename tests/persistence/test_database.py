@@ -3,8 +3,8 @@ from pytest_mock import MockerFixture
 from sqlalchemy.engine import make_url
 from sqlalchemy.orm import Session, sessionmaker
 
-from fast_alchemy.persistence.context import _session
-from fast_alchemy.persistence.database import Database
+from fast_sqlalchemy.persistence.context import _session
+from fast_sqlalchemy.persistence.database import Database
 
 
 @pytest.fixture()

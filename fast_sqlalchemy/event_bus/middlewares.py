@@ -4,8 +4,8 @@ from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoin
 from starlette.requests import Request
 from starlette.types import ASGIApp
 
-from fast_alchemy.event_bus.contexts import event_queue_ctx, event_bus_store
-from fast_alchemy.event_bus.emit import publish_events
+from fast_sqlalchemy.event_bus.contexts import event_queue_ctx, event_bus_store
+from fast_sqlalchemy.event_bus.emit import publish_events
 
 
 class EventBusMiddleware(BaseHTTPMiddleware):

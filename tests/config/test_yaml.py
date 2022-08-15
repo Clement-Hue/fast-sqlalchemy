@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from fast_alchemy.config.yaml import Configuration
+from fast_sqlalchemy.config.yaml import Configuration
 from dotenv import load_dotenv
 
 root_dir = os.path.dirname(os.path.abspath(__file__))

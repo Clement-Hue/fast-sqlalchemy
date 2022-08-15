@@ -2,9 +2,9 @@ import pytest
 
 from pytest_mock import MockerFixture
 
-from fast_alchemy.event_bus.bus import LocalEventBus
-from fast_alchemy.event_bus.contexts import event_queue_ctx, _event_queue
-from fast_alchemy.event_bus.emit import emit, publish_events
+from fast_sqlalchemy.event_bus.bus import LocalEventBus
+from fast_sqlalchemy.event_bus.contexts import event_queue_ctx, _event_queue
+from fast_sqlalchemy.event_bus.emit import emit, publish_events
 
 
 def test_emit(mocker: MockerFixture, event_bus_store_ctx):

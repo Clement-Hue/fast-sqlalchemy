@@ -14,12 +14,12 @@ This project was first made to provide some tools to use Fastapi with SQLAlchemy
 
 Installation using pip:
 ```shell
-pip install fast_alchemy
+pip install fast_sqlalchemy
 ```
 
 Or with poetry:
 ```shell
-poetry add fast_alchemy
+poetry add fast_sqlalchemy
 ```
 
 ## The database middlewares

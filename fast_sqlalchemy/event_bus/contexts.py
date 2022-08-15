@@ -1,7 +1,7 @@
 import contextlib, logging
 from contextvars import ContextVar
 from typing import Set
-from fast_alchemy.event_bus.bus import EventBus
+from fast_sqlalchemy.event_bus.bus import EventBus
 
 logger = logging.getLogger(__name__)
 

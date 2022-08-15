@@ -1,9 +1,9 @@
 import pytest
 from pytest_mock import MockerFixture
 
-from fast_alchemy.event_bus.bus import LocalEventBus
-from fast_alchemy.event_bus.contexts import event_bus_store
-from fast_alchemy.event_bus.middlewares import EventBusMiddleware
+from fast_sqlalchemy.event_bus.bus import LocalEventBus
+from fast_sqlalchemy.event_bus.contexts import event_bus_store
+from fast_sqlalchemy.event_bus.middlewares import EventBusMiddleware
 
 
 def test_register_handlers(mocker: MockerFixture, event_bus_store_ctx):
@@ -16,7 +16,7 @@ def test_register_handlers(mocker: MockerFixture, event_bus_store_ctx):
 
 @pytest.mark.asyncio
 async def test_publish_events(mocker: MockerFixture, event_bus_store_ctx):
-    publish_mock = mocker.patch("fast_alchemy.event_bus.middlewares.publish_events")
+    publish_mock = mocker.patch("fast_sqlalchemy.event_bus.middlewares.publish_events")
     assert len(event_bus_store) == 0
     event_bus = mocker.AsyncMock()
     response = mocker.MagicMock(status_code=201)
@@ -28,7 +28,7 @@ async def test_publish_events(mocker: MockerFixture, event_bus_store_ctx):
 
 @pytest.mark.asyncio
 async def test_publish_not_call_if_status_is_above_400(mocker: MockerFixture, event_bus_store_ctx):
-    publish_mock = mocker.patch("fast_alchemy.event_bus.middlewares.publish_events")
+    publish_mock = mocker.patch("fast_sqlalchemy.event_bus.middlewares.publish_events")
     event_bus = mocker.AsyncMock()
     response = mocker.MagicMock(status_code=400)
 

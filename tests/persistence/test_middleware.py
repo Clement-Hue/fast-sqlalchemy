@@ -1,7 +1,7 @@
 import pytest
 from pytest_mock import MockerFixture
 
-from fast_alchemy.persistence.middlewares import DatabaseMiddleware, AutocommitMiddleware
+from fast_sqlalchemy.persistence.middlewares import DatabaseMiddleware, AutocommitMiddleware
 
 
 

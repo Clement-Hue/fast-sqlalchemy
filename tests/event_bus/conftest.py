@@ -3,7 +3,7 @@ from typing import Iterable
 
 import pytest
 
-from fast_alchemy.event_bus.contexts import event_bus_store
+from fast_sqlalchemy.event_bus.contexts import event_bus_store
 
 
 @pytest.fixture

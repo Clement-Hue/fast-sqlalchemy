@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "fast-alchemy"
+name = "fast-sqlalchemy"
 version = "0.8.0"
 description = "Make application with Fastapi and Sqlalchemy with ease"
 authors = ["Clement_Hue <clementhue@hotmail.fr>"]
@@ -46,7 +46,7 @@ pysqlite3 = "^0.4.7"
 addopts = "-s  --color=yes"
 
 [tool.poetry.plugins]
-pytest11 = { fast_alchemy = "fast_alchemy.testing.pytest" }
+pytest11 = { fast_sqlalchemy = "fast_sqlalchemy.testing.pytest" }
 
 [build-system]
 requires = ["poetry-core>=1.0.8"]
