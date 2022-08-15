@@ -1,8 +1,27 @@
 [tool.poetry]
 name = "fast-alchemy"
-version = "0.7.1"
-description = "Framework for Orthoresa"
+version = "0.7.2"
+description = "Make application with Fastapi and Sqlalchemy with ease"
 authors = ["Clement_Hue <clementhue@hotmail.fr>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/Chaisenbois/fast-alchemy"
+classifiers = [
+        "Environment :: Web Environment",
+        "Framework :: AsyncIO",
+        "Framework :: FastAPI",
+        "Framework :: SQLAlchemy",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: Implementation :: CPython",
+        "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+]
 
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"

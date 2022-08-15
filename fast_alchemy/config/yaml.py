@@ -25,6 +25,11 @@ class Configuration:
         return value
 
     def load_config(self, env_path:str = None ):
+        """
+        Load all the configuration files witch remain within the config_dir
+
+        :param env_path: Optionally specify the path to a .env file
+        """
         load_dotenv(env_path)
         sources = [confuse.YamlSource(os.path.join(self.config_dir, file))
                    for file in os.listdir(self.config_dir) if file.endswith((".yaml", ".yml"))]
