@@ -17,7 +17,7 @@ poetry add fast_alchemy
 ## The database middlewares
 Fast-alchemy provide multiple middlewares to use SQLAlchemy with Fastapi easily
 
-### the DatabaseMiddleware
+### The DatabaseMiddleware
 The main middleware is the database middleware which is made to provide a sqlalchemy session accessible throughout your application. We use the ContextVar api of python to have unique session in the context of each request.
 
 To use this middleware you must at first create a Database object where you must pass the url of your database and the engine options of SQLAlchemy:
