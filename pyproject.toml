@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "fast-alchemy"
+name = "fast-sqlalchemy"
 version = "0.8.0"
 description = "Make application with Fastapi and Sqlalchemy with ease"
 authors = ["Clement_Hue <clementhue@hotmail.fr>"]
