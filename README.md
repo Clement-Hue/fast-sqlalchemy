@@ -146,9 +146,9 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 config = Configuration(os.path.join(ROOT_DIR, "config"))
 config.load_config(os.path.join(ROOT_DIR, ".env"))
 ```
-When you creating the object you must specify the path of your configuration directory, this directory will contains all of your yaml files
+When you're creating the object you must specify the path of your configuration directory, this directory will contains all of your yaml files
 Then you can load these configurations file by calling __load_config__, this method accept an env_path which corresponds to a .env file.
-After that you can create your yaml configuration files. Note that you can use your environment variables within your yaml files, these variable will be parsed.
+After that you can create your yaml configuration files. Note that you can use your environment variables within your yaml files, these variables will be parsed.
 
 ```yaml
 project_name: ${PROJECT_NAME}
@@ -160,7 +160,7 @@ Then you can have access to your configuration within your application like this
 ```python
 config["project_name"].get(str)
 ```
-Note that, it's the library confuse which is used underneath, check out here to have more details https://github.com/beetbox/confuse
+Note that, the library confuse which is used underneath, check out here to have more details https://github.com/beetbox/confuse
 
 ## Licence
 
