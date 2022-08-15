@@ -1,6 +1,14 @@
 # Welcom to fast-alchemy
 
 This project was first made to provide some tools to use Fastapi with SQLAlchemy with ease.
+## Contents
+
+- [Installation](#installation)
+- [The database middlewares](#the-database-middlewares)
+    - [The DatabaseMiddleware](#the-databasemiddleware)
+    - [The AutocomitMiddleware](#the-autocomitmiddleware)
+- [The event bus](#the-event-bus)
+- [The yaml config reader](#the-yaml-config-reader)
 
 ## Installation
 
