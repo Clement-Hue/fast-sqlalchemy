@@ -10,7 +10,6 @@ classifiers = [
         "Environment :: Web Environment",
         "Framework :: AsyncIO",
         "Framework :: FastAPI",
-        "Framework :: SQLAlchemy",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
