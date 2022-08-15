@@ -15,7 +15,9 @@ poetry add fast_alchemy
 ```
 
 ## The database middlewares
+Fast-alchemy provide multiple middlewares to use SQLAlchemy with Fastapi easily
 
+### Database middleware
 The main middleware is the database middleware which is made to provide a sqlalchemy session accessible throughout your application. We use the ContextVar api of python to have unique session in the context of each request.
 
 To use this middleware you must at first create a Database object where you must pass the url of your database and the engine options of SQLAlchemy:
@@ -35,7 +37,8 @@ And then register the database middleware:
 fastapi = FastAPI()
 fastapi.add_middleware(DatabaseMiddleware, db=db)
 ```
-After that you can have access to the sqlalchemy session api, through the property session of the Database object in the entire application:
+After that you can have access to the sqlalchemy session of the current request, through the property session of the Database object in the entire application:
+
 ```python
 db.session.query(User).first()
 ```
@@ -89,9 +92,47 @@ After that you can emit events wherever in your Fastapi application:
 emit(EmailChanged(email=email))
 ```
 
+### The Autocomit middleware
+The auto commit middleware as its name suggest is a middleware which automatically commit at the end of each request. It must be used with the database middleware and must be registered before otherwise it won't work:
 
+```python
+fastapi = Fastapi()
+fastapi.add_middleware(AutocommitMiddleware, db=db)
+fastapi.add_middleware(DatabaseMiddleware, db=db)
+```
 
 ## The database testing class
+
+Fast-alchemy provide an utility class named TestDatabase which can be used to test your Fastapi application with SQLAlchemy with ease. This class allow you to have isolated test by having each test wrapped in a transaction that is rollback at the end of each test, so that each test have a fresh database.
+
+To use it with pytest, you can simply create two fixtures:
+
+```python
+from my_app import factories
+
+@pytest.fixture(scope="session")
+def db_client():
+    db_client = TestDatabase(db=app_db, factories_modules=[factories])
+    with db_client.start_connection(metadata=metadata):
+        yield db_client
+```
+Note that this class is compatible with the library factory_boy, you can register as shown in the example above a list of modules which contains your factory class so that each factory wil be bound to the session provided by the TestDatabase object.
+
+After that you can create a second fixture:
+
+```python
+@pytest.fixture()
+def sqla_session(db_client):
+    with db_client.start_session() as session:
+        yield session
+```
+This fixture will provide a sqlalchemy session to your tests:
+
+```python
+def test_create_user(sqla_session):
+    user = UserFactory()
+    assert sqla_session.query(User).first().id == user.id
+```
 
 ## The yaml config reader
 
