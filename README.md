@@ -85,7 +85,7 @@ def check_email_uniqueness(e: EmailChanged):
     # some logic
     pass
 ```
-There are two kinds of handler sync and async handler. Sync handlers are called once the event is emitted, whereas async handlers are called at the end of the request.
+There are two kinds of handler sync and async handler. Sync handlers are called once the event is emitted, whereas async handlers are called at the end of the current request.
 To register an async handler is nearly the same as above
 
 ```python
@@ -94,21 +94,21 @@ def check_email_uniqueness(e: EmailChanged | OtherEvent):
     # some logic
     pass
 ```
-Note that an handler can handle multiple type of event
+Note that an handler can handle multiple types of event
 
-After that you can emit events wherever in your Fastapi application:
+After that you can emit events wherever you want in your Fastapi application:
 
 ```python
 emit(EmailChanged(email=email))
 ```
 
-
-
 ## The database testing class
 
 Fast-alchemy provide an utility class named TestDatabase which can be used to test your Fastapi application with SQLAlchemy with ease. This class allow you to have isolated test by having each test wrapped in a transaction that is rollback at the end of each test, so that each test have a fresh database.
 
-To use it with pytest, you can simply create two fixtures:
+To use it with pytest, you can simply create two fixtures.
+A primary fixture with a scope of 'session' which will create a connection to the database and create the database if it doesn't exist (A testing database is created with the same name of your application's databse prefixed with 'test_'). 
+The testing database is then dropped at the end (You can optionally turn if off).
 
 ```python
 from my_app import factories
