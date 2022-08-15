@@ -1,4 +1,4 @@
-# Welcom to fast-alchemy
+# Welcom to fast-sqlalchemy
 
 This project was first made to provide some tools to use Fastapi with SQLAlchemy with ease.
 ## Contents
@@ -23,7 +23,7 @@ poetry add fast_sqlalchemy
 ```
 
 ## The database middlewares
-Fast-alchemy provide multiple middlewares to use SQLAlchemy with Fastapi easily
+Fast-sqlalchemy provide multiple middlewares to use SQLAlchemy with Fastapi easily
 
 ### The DatabaseMiddleware
 The main middleware is the database middleware which is made to provide a sqlalchemy session accessible throughout your application. We use the ContextVar api of python to have unique session in the context of each request.
