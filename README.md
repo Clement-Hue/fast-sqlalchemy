@@ -168,7 +168,7 @@ Then you can have access to your configuration within your application like this
 ```python
 config["project_name"].get(str)
 ```
-Note that, the library confuse which is used underneath, check out here to have more details https://github.com/beetbox/confuse
+Note that, the library confuse is used underneath, check out here to have more details https://github.com/beetbox/confuse
 
 ## Licence
 
