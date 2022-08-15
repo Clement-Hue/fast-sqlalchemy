@@ -20,8 +20,6 @@ class Database:
 
     @contextlib.contextmanager
     def session_ctx(self):
-        assert self._session_factory is not None, "Make sure that the database middleware is " \
-                                                  "installed and well configured"
         session = self._session_factory()
         token = _session.set(session)
         try:
