@@ -19,3 +19,10 @@ def test_get_yaml_config(config_test):
 def test_yaml_config_with_env(config_test):
     config_test.load_config(os.path.join(root_dir, ".env"))
     assert config_test["env_key"].get() == "var_foo.bar"
+
+def test_merge_test_config():
+    config_test = Configuration(os.path.join(root_dir, "test_cfg_dir"),
+                  test_config_dir=os.path.join(root_dir, "test_cfg_dir/tests"))
+    config_test.load_config(use_test_config=True)
+    assert config_test["nested"]["key"]["subkey2"].get() == "override"
+    assert config_test["nested"]["key"].get() == {"subkey1": "val1", "subkey2": "override"}

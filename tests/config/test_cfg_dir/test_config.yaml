@@ -1,2 +1,6 @@
 env_key: var_${ENV_1}.${ENV_2}
 db: test_db
+nested:
+  key:
+    subkey1: "val1"
+    subkey2: "val2"
