@@ -29,6 +29,11 @@ def test_multiple_files(config_test):
     assert config_test["other_file"]["key"] == "other"
     assert config_test["db"] == "test_db"
 
+def test_set_item(config_test):
+    config_test.load_config(os.path.join(root_dir, ".env"))
+    config_test["nested"]["key"]["subkey1"] = "override"
+    assert config_test["nested"]["key"]["subkey1"] == "override"
+    assert config_test["nested"]["key"]["subkey2"] == "val2"
 
 def test_get_all_config(config_test):
     config_test.load_config(os.path.join(root_dir, ".env"))
