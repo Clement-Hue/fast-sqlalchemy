@@ -9,7 +9,8 @@ def load_yaml_files(directory: str, loader: Type[Loader]):
     for filename in os.listdir(directory):
         if filename.endswith((".yaml", ".yml")):
             with open(os.path.join(directory, filename)) as file:
-                data.update(yaml.load(file, Loader=loader))
+                if loaded_data := yaml.load(file, Loader=loader):
+                    data.update(loaded_data)
     return data
 
 
