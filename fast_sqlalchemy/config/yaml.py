@@ -1,6 +1,5 @@
 import os, re, logging
 
-
 import yaml
 from dotenv import load_dotenv
 
@@ -9,13 +8,19 @@ from fast_sqlalchemy.config.utils import load_yaml_files, deep_merge_dict
 logger = logging.getLogger(__name__)
 
 
-class Configuration():
-    def __init__(self, config_dir=None, test_config_dir=None):
+class Configuration:
+    def __init__(self, config_dir=None,  env_path=None):
+        """
+        Create a configuration object which load yaml files.
+
+        :param config_dir: The directory which contains all the yaml files
+        :param env_path: Optionally specify the path to a .env file
+        """
         super().__init__()
+        load_dotenv(env_path)
         self._config = None
         self._yaml_loader = self._create_loader()
         self.config_dir = config_dir
-        self.test_config_dir = test_config_dir
 
     def _create_loader(self):
         loader = yaml.Loader
@@ -32,16 +37,17 @@ class Configuration():
             else:
                 logger.warning(f"Environment variable {group} not found")
         return value
-    def load_config(self, env_path: str = None, use_test_config=False):
+    def load_config(self, env: str=None):
         """
-        Load all the configuration files witch remain within the config_dir
+        Load all the configuration files within the config_dir
 
-        :param env_path: Optionally specify the path to a .env file
+        :param env: Specify the environment to use, the environment configuration must
+        be a directory within the config directory witch contains yaml files that  will override
+        the configuration.
         """
-        load_dotenv(env_path)
         self._config = load_yaml_files(self.config_dir, self._yaml_loader)
-        if use_test_config:
-            self._override_with_test_config()
+        if env:
+            self._load_env_config(env)
 
     def __getitem__(self, item):
         assert self._config, "Make sure to call load_config before accessing the configuration"
@@ -54,8 +60,10 @@ class Configuration():
     def get(self):
         return self._config
 
-    def _override_with_test_config(self):
-        assert self.test_config_dir, "You must specify a test directory if you use the flag " \
-                                     "'use_test_config'"
-        test_config = load_yaml_files(self.test_config_dir, self._yaml_loader)
+    def _load_env_config(self, env: str):
+        path = os.path.join(self.config_dir, env)
+        assert os.path.isdir(path), f"No directory with name '{env}' find in the config " \
+                                    f"directory. Make sure to create a directory with name " \
+                                    f"'{env}' within the config directory."
+        test_config = load_yaml_files(path, self._yaml_loader)
         self._config = deep_merge_dict(self._config, test_config)
