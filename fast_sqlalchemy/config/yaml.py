@@ -67,3 +67,4 @@ class Configuration:
                                     f"'{env}' within the config directory."
         test_config = load_yaml_files(path, self._yaml_loader)
         self._config = deep_merge_dict(self._config, test_config)
+        logger.info(f"Configuration '{env}' loaded")
