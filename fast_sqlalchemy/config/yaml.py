@@ -51,7 +51,14 @@ class Configuration:
 
     def __getitem__(self, item):
         assert self._config, "Make sure to call load_config before accessing the configuration"
-        return self._config[item]
+        try:
+            return self._config[item]
+        except KeyError:
+            env_value = os.getenv(item)
+            if env_value is None:
+                raise
+            logger.warning("Key {item} not found in yaml files. The environment variable is used as fallback")
+            return os.getenv(item)
 
     def __setitem__(self, key, value):
         assert self._config, "Make sure to call load_config before overriding the configuration"

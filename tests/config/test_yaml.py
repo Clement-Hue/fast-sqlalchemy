@@ -41,14 +41,21 @@ def test_get_all_config(config_test):
                                  'other_file': {'key': 'other'}}
 
 
-def test_merge_env_config():
-    config_test = Configuration(os.path.join(root_dir, "test_cfg_dir"))
+def test_merge_env_config(config_test):
     config_test.load_config(env="test")
     assert config_test["nested"]["key"]["subkey2"] == "override"
     assert config_test["nested"]["key"] == {"subkey1": "val1", "subkey2": "override"}
 
 
-def test_merge_config_empty_directory():
-    config_test = Configuration(os.path.join(root_dir, "test_cfg_dir"))
+def test_merge_config_empty_directory(config_test):
     config_test.load_config(env="empty")
     assert config_test["nested"]["key"] == {"subkey1": "val1", "subkey2": "val2"}
+
+def test_fallback_to_env_if_key_not_found(config_test):
+    config_test.load_config()
+    assert config_test["env_var"] == "fallback"
+
+def test_raise_exception_if_env_fallback_not_found_as_well(config_test):
+    config_test.load_config()
+    with pytest.raises(KeyError):
+        val = config_test["not_exist"]
