@@ -65,9 +65,20 @@ class Configuration:
         assert self._config, "Make sure to call load_config before overriding the configuration"
         self._config[key] = value
 
-    def get(self, value: str, default: any = None):
+    def get(self, key: str = None, default: any = None):
+        """
+        Return the configuration key's value in dot-separated notation. If no key is specified,
+        it returns the entire configuration.
+        A default value can be specified if the key is not found
+
+        :param key: The key in dot-separated notation ex: 'database.host'
+        :param default: A default value if key is not found
+        :return: The configuration key's value or the entire configuration if no key is specified
+        """
         try:
-            return reduce(lambda c, k: c[k], value.split("."), self._config)
+            if key is None:
+                return self._config
+            return reduce(lambda c, k: c[k], key.split("."), self._config)
         except KeyError:
             if default is None:
                 raise
@@ -77,8 +88,8 @@ class Configuration:
         path = os.path.join(self.config_dir, env)
         if not os.path.isdir(path):
             logger.warning(
-                f"No directory with name '{env}' find in the config " \
-                f"directory. Make sure to create a directory with name " \
+                f"No directory with name '{env}' find in the config "
+                f"directory. Make sure to create a directory with name "
                 f"'{env}' within the config directory."
             )
             return

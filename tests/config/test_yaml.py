@@ -51,6 +51,11 @@ def test_merge_config_empty_directory(config_test):
     config_test.load_config(env="empty")
     assert config_test["nested"]["key"] == {"subkey1": "val1", "subkey2": "val2"}
 
+def test_merge_config_not_found_dir(config_test, caplog):
+    config_test.load_config(env="not_found")
+    assert "No directory" in caplog.text
+
+
 def test_fallback_to_env_if_key_not_found(config_test):
     config_test.load_config()
     assert config_test["env_var"] == "fallback"
