@@ -51,16 +51,13 @@ class TestDatabase:
         :param alembic_ini_path: Path to alembic ini configuration
         :param drop_database: If true, drop the database when the connection is released
         """
-        try:
-            if not sqlalchemy_utils.database_exists(self.url):
-                sqlalchemy_utils.create_database(self.url)
-                logger.debug("Testing database created")
-            alembic_config = Config(file_=alembic_ini_path)
-            alembic_config.set_main_option("sqlalchemy.url", str(self.url))
-            command.upgrade(alembic_config, "head")
-            self.connection = self.engine.connect()
-        except InternalError:
-            pass
+        if not sqlalchemy_utils.database_exists(self.url):
+            sqlalchemy_utils.create_database(self.url)
+            logger.debug("Testing database created")
+        alembic_config = Config(file_=alembic_ini_path)
+        alembic_config.set_main_option("sqlalchemy.url", str(self.url))
+        command.upgrade(alembic_config, "head")
+        self.connection = self.engine.connect()
         yield self
         self.release(drop_database=drop_database)
 
