@@ -1,5 +1,4 @@
 import os, pytest, sqlalchemy_utils
-from alembic import command
 from pytest_mock import MockerFixture
 from sqlalchemy import text
 from sqlalchemy.engine import Engine
@@ -7,6 +6,7 @@ from sqlalchemy.exc import ResourceClosedError
 
 from fast_sqlalchemy.persistence.database import Database, _session
 from fast_sqlalchemy.testing.db_client import TestDatabase
+from tests.testing.conftest import alembic_db
 from tests.testing.factories_stub import UserFactory, AccountFactory, User
 from tests.testing import factories_stub
 
@@ -30,8 +30,7 @@ def test_load_factory(db):
 
 
 def test_db_client_create_database_and_migration():
-    db = Database("sqlite:///test.db")
-    test_db = TestDatabase(db=db)
+    test_db = TestDatabase(db=alembic_db)
     with test_db.start_connection(os.path.join(root_dir, "alembic.ini")):
         test_db.connection.execute(text("select * from users"))
 
@@ -48,8 +47,7 @@ def test_db_client_release_resources(db, mocker: MockerFixture):
 
 
 def test_start_test_session():
-    db = Database("sqlite:///test.db")
-    test_db = TestDatabase(db=db, factories_modules=[factories_stub])
+    test_db = TestDatabase(db=alembic_db, factories_modules=[factories_stub])
     with test_db.start_connection(os.path.join(root_dir, "alembic.ini")):
         with test_db.start_session() as session:
             assert _session.get() == session
