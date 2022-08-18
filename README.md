@@ -161,8 +161,8 @@ Fast-sqlalchemy provide a class named Configuration which allow you to have your
 
 ```python
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-config = Configuration(os.path.join(ROOT_DIR, "config"))
-config.load_config(os.path.join(ROOT_DIR, ".env"))
+config = Configuration(os.path.join(ROOT_DIR, "config"), env_path=os.path.join(ROOT_DIR, ".env"))
+config.load_config(config="test")
 ```
 When you're creating the object you must specify the path of your configuration directory, this directory will contain all of your yaml files.
 You can also specify a .env file which will be read thanks to the dotenv library.
