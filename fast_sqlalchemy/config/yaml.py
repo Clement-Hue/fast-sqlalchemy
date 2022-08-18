@@ -50,17 +50,17 @@ class Configuration:
                 logger.warning(f"Environment variable {group} not found")
         return value
 
-    def load_config(self, env: str = None):
+    def load_config(self, config: str = None):
         """
         Load all the configuration files within the config_dir
 
-        :param env: Specify the environment to use, the environment configuration must
-        be a directory within the config directory witch contains yaml files that  will override
-        the configuration.
+        :param config: Specify the configuration to use, the configuration must
+        be a directory within the config directory witch contains yaml files that will be merged
+        with the base configuration at the root of the config directory.
         """
         self._config = load_yaml_files(self.config_dir, self._yaml_loader)
-        if env:
-            self._load_env_config(env)
+        if config:
+            self._load_env_config(config)
 
     def __getitem__(self, item):
         try:
