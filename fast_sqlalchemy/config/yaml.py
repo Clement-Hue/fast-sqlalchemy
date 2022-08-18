@@ -4,9 +4,11 @@ from functools import reduce
 import yaml
 from dotenv import load_dotenv
 
+from fast_sqlalchemy.config.exceptions import ConfigNotLoaded
 from fast_sqlalchemy.config.utils import load_yaml_files, deep_merge_dict
 
 logger = logging.getLogger(__name__)
+
 
 
 class Configuration:
@@ -19,10 +21,19 @@ class Configuration:
         """
         super().__init__()
         load_dotenv(env_path)
-        self._config = None
+        self.__config = None
         self._yaml_loader = self._create_loader()
         self.config_dir = config_dir
 
+    @property
+    def _config(self):
+        if self.__config is None:
+            raise ConfigNotLoaded()
+        return self.__config
+
+    @_config.setter
+    def _config(self, value):
+        self.__config = value
     def _create_loader(self):
         loader = yaml.Loader
         self.env_pattern = re.compile(r".*?\${(.*?)}")
@@ -51,7 +62,6 @@ class Configuration:
             self._load_env_config(env)
 
     def __getitem__(self, item):
-        assert self._config, "Make sure to call load_config before accessing the configuration"
         try:
             return self._config[item]
         except KeyError:
@@ -62,7 +72,6 @@ class Configuration:
             return os.getenv(item)
 
     def __setitem__(self, key, value):
-        assert self._config, "Make sure to call load_config before overriding the configuration"
         self._config[key] = value
 
     def get(self, key: str = None, default: any = None):
@@ -83,6 +92,19 @@ class Configuration:
             if default is None:
                 raise
             return default
+
+    def set(self, key: str, value: any):
+        """
+        Set a value to a key in dot-separated notation
+
+        :param key: The key in dot-separated-notation ex: 'database.host'
+        :param value: The value to set to the key
+        """
+        keys = key.split(".")
+        obj = self._config
+        for k in keys[:-1]:
+            obj = obj.setdefault(k, {})
+        obj[keys[-1]] = value
 
     def _load_env_config(self, env: str):
         path = os.path.join(self.config_dir, env)

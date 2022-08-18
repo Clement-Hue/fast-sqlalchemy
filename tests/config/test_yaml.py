@@ -2,6 +2,7 @@ import os
 
 import pytest
 
+from fast_sqlalchemy.config.exceptions import ConfigNotLoaded
 from fast_sqlalchemy.config.yaml import Configuration
 
 root_dir = os.path.dirname(os.path.abspath(__file__))
@@ -67,8 +68,28 @@ def test_raise_exception_if_env_fallback_not_found_as_well(config_test):
 
 def test_get_env_with_dot_annotation(config_test):
     config_test.load_config()
-    assert config_test.get("nested.key.subkey2")  == "val2"
+    assert config_test.get("nested.key.subkey2") == "val2"
     assert config_test.get("nested.key.subkey100", "default") == "default"
     assert config_test.get("env_var") == "fallback"
     with pytest.raises(KeyError):
         config_test.get("nested.key.subkey100")
+
+def test_set_env_with_dot_annotation(config_test):
+    config_test.load_config()
+    config_test.set("nested.key.subkey2", "override")
+    config_test.set("new_nested.key.val", "new")
+    config_test.set("db", "db_override")
+    assert config_test.get("nested.key.subkey2") == "override"
+    assert config_test.get("db") == "db_override"
+    assert config_test.get("new_nested.key.val") == "new"
+
+def test_access_config_without_load_config(config_test):
+    with pytest.raises(ConfigNotLoaded):
+        config_test.set("nested.key.subkey2", "override")
+    with pytest.raises(ConfigNotLoaded):
+        config_test.get("nested.key.subkey2")
+    with pytest.raises(ConfigNotLoaded):
+        val = config_test["nested.key"]["subkey2"]
+    with pytest.raises(ConfigNotLoaded):
+        config_test["nested.key"]["subkey2"] = "test"
+
