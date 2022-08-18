@@ -36,7 +36,7 @@ class TestDatabase:
         """
         self.db = db
         self._workerinput = workerinput
-        self.url = self.db.url.set(database="test_" + self.db.url.database) if self.db.url.database else self.db.url
+        self.db.url = self.db.url.set(database="test_" + self.db.url.database) if self.db.url.database else self.db.url
         self.factories = self._load_factories(factories_modules) if factories_modules else None
         self.engine = self._create_engine(**engine_options)
         self.connection: Optional[Connection] = None
@@ -51,23 +51,22 @@ class TestDatabase:
         :param alembic_ini_path: Path to alembic ini configuration
         :param drop_database: If true, drop the database when the connection is released
         """
-        if not sqlalchemy_utils.database_exists(self.url):
-            sqlalchemy_utils.create_database(self.url)
+        if not sqlalchemy_utils.database_exists(self.db.url):
+            sqlalchemy_utils.create_database(self.db.url)
             logger.debug("Testing database created")
         alembic_config = Config(file_=alembic_ini_path)
-        alembic_config.set_main_option("sqlalchemy.url", str(self.url))
         command.upgrade(alembic_config, "head")
         self.connection = self.engine.connect()
         yield self
         self.release(drop_database=drop_database)
 
     def _create_engine(self, **engine_options):
-        engine = create_engine(self.url, **engine_options)
+        engine = create_engine(self.db.url, **engine_options)
         # Put a suffix like _gw0, _gw1 etc on xdist processes
         if engine.url.database != ':memory:' and self._workerinput is not None:
             logger.debug("Creating engine for each worker")
             xdist_suffix = self._workerinput.get('workerid')
-            xdist_url = self.url.set(database='{}_{}'.format(engine.url.database, xdist_suffix))
+            xdist_url = self.db.url.set(database='{}_{}'.format(engine.url.database, xdist_suffix))
             engine = create_engine(xdist_url, **engine_options)  # override engine
         return engine
 
@@ -83,7 +82,7 @@ class TestDatabase:
         self.engine.dispose()
         if drop_database:
             logger.debug("Testing database dropped")
-            sqlalchemy_utils.drop_database(self.url)
+            sqlalchemy_utils.drop_database(self.db.url)
         logger.debug("Releasing resources")
 
     def _load_factories(self, factories_modules: list[ModuleType]):
@@ -109,7 +108,7 @@ class TestDatabase:
                 factory._meta.sqlalchemy_session = session
                 factory._meta.sqlalchemy_session_persistence = "commit"
 
-            dialect_name = self.url.get_dialect().name
+            dialect_name = self.db.url.get_dialect().name
             if dialect_name != "sqlite":
                 nested = self.connection.begin_nested()  # allow rollback within the test
 
