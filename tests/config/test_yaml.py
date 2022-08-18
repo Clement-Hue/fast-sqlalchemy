@@ -59,3 +59,10 @@ def test_raise_exception_if_env_fallback_not_found_as_well(config_test):
     config_test.load_config()
     with pytest.raises(KeyError):
         val = config_test["not_exist"]
+
+def test_get_env_with_dot_annotation(config_test):
+    config_test.load_config()
+    assert config_test.get("nested.key.subkey2")  == "val2"
+    assert config_test.get("nested.key.subkey100", "default") == "default"
+    with pytest.raises(KeyError):
+        config_test.get("nested.key.subkey100")

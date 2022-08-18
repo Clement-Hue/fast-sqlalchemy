@@ -1,4 +1,5 @@
 import os, re, logging
+from functools import reduce
 
 import yaml
 from dotenv import load_dotenv
@@ -64,14 +65,23 @@ class Configuration:
         assert self._config, "Make sure to call load_config before overriding the configuration"
         self._config[key] = value
 
-    def get(self):
-        return self._config
+    def get(self, value: str, default: any = None):
+        try:
+            return reduce(lambda c, k: c[k], value.split("."), self._config)
+        except KeyError:
+            if default is None:
+                raise
+            return default
 
     def _load_env_config(self, env: str):
         path = os.path.join(self.config_dir, env)
-        assert os.path.isdir(path), f"No directory with name '{env}' find in the config " \
-                                    f"directory. Make sure to create a directory with name " \
-                                    f"'{env}' within the config directory."
+        if not os.path.isdir(path):
+            logger.warning(
+                f"No directory with name '{env}' find in the config " \
+                f"directory. Make sure to create a directory with name " \
+                f"'{env}' within the config directory."
+            )
+            return
         test_config = load_yaml_files(path, self._yaml_loader)
         self._config = deep_merge_dict(self._config, test_config)
         logger.info(f"Configuration '{env}' loaded")
