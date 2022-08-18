@@ -54,9 +54,9 @@ class Configuration:
         """
         Load all the configuration files within the config_dir
 
-        :param config: Specify the configuration to use, the configuration must
-        be a directory within the config directory witch contains yaml files that will be merged
-        with the base configuration at the root of the config directory.
+        :param config: Specify the configuration to use, the configuration must be a
+            directory within the config directory witch contains yaml files that will be merged
+            with the base configuration at the root of the config directory.
         """
         self._config = load_yaml_files(self.config_dir, self._yaml_loader)
         if config:

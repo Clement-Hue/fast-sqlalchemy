@@ -3,10 +3,13 @@ import contextlib
 import inspect
 import logging
 from types import ModuleType
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
+from alembic import command
+from alembic.config import Config
 from factory.alchemy import SQLAlchemyModelFactory
-from sqlalchemy import create_engine, MetaData, event
+from sqlalchemy import create_engine, event
+from sqlalchemy.engine import Connection
 from sqlalchemy.exc import InternalError
 import sqlalchemy_utils
 
@@ -24,33 +27,37 @@ class TestDatabase:
         """
         Create a testing database client.
 
-        :param db: The Database object use in the application;
-        :param factories_modules: Optionally pass modules which contains factories from factory_boy library to wire them when creating a testing session.
-        :param workerinput: The workerinput get from the request.config object from pytest when using pytest-xdist library, so that every worker have their own isolated database.
-        :param engine_options: Sqlalchemy engine parameters.
+        :param db: The Database object use in the application
+        :param factories_modules: A list of modules which contains factories from factory_boy's library
+            to wire them with the testing session
+        :param workerinput: The workerinput get from the request.config object from pytest when using pytest-xdist
+            library, so that every worker have their own isolated database
+        :param engine_options: Sqlalchemy engine parameters
         """
         self.db = db
         self._workerinput = workerinput
         self.url = self.db.url.set(database="test_" + self.db.url.database) if self.db.url.database else self.db.url
         self.factories = self._load_factories(factories_modules) if factories_modules else None
         self.engine = self._create_engine(**engine_options)
-        self.connection = None
+        self.connection: Optional[Connection] = None
         logger.debug("Engine and sessionmaker created")
 
     @contextlib.contextmanager
-    def start_connection(self, metadata: MetaData, drop_database=True):
+    def start_connection(self, alembic_ini_path:str, drop_database=True):
         """
         Start connection to the database. Create the database if it doesn't exist and
         release connection at the end, optionally drop the database.
 
-        :param metadata: The sqlalchemy metadata
-        :param drop_database: drop or not the database when the connection is released
+        :param alembic_ini_path: Path to alembic ini configuration
+        :param drop_database: If true, drop the database when the connection is released
         """
         try:
             if not sqlalchemy_utils.database_exists(self.url):
                 sqlalchemy_utils.create_database(self.url)
                 logger.debug("Testing database created")
-            metadata.create_all(bind=self.engine)
+            alembic_config = Config(file_=alembic_ini_path)
+            alembic_config.set_main_option("sqlalchemy.url", str(self.url))
+            command.upgrade(alembic_config, "head")
             self.connection = self.engine.connect()
         except InternalError:
             pass
@@ -70,13 +77,15 @@ class TestDatabase:
     def release(self, drop_database=True):
         """
         Release connection, engine and optionally dropping the current testing database
+
+        :param drop_database: Flag to drop the current testing database
         """
         if self.connection:
             self.connection.close()
 
         self.engine.dispose()
         if drop_database:
-            logger.debug("Drop testing database")
+            logger.debug("Testing database dropped")
             sqlalchemy_utils.drop_database(self.url)
         logger.debug("Releasing resources")
 
