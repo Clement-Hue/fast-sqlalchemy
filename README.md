@@ -1,4 +1,4 @@
-# Welcom to fast-sqlalchemy
+# Welcome to fast-sqlalchemy
 
 This project was first made to provide some tools to use Fastapi with SQLAlchemy with ease.
 ## Contents
@@ -6,9 +6,9 @@ This project was first made to provide some tools to use Fastapi with SQLAlchemy
 - [Installation](#installation)
 - [The database middlewares](#the-database-middlewares)
     - [The DatabaseMiddleware](#the-databasemiddleware)
-    - [The AutocomitMiddleware](#the-autocomitmiddleware)
+    - [The AutocommitMiddleware](#the-autocommitmiddleware)
 - [The event bus](#the-event-bus)
-- [The yaml config reader](#the-yaml-config-reader)
+- [The yaml config reader](#the-yaml-configuration-loader)
 
 ## Installation
 
@@ -26,9 +26,11 @@ poetry add fast_sqlalchemy
 Fast-sqlalchemy provide multiple middlewares to use SQLAlchemy with Fastapi easily
 
 ### The DatabaseMiddleware
-The main middleware is the database middleware which is made to provide a sqlalchemy session accessible throughout your application. We use the ContextVar api of python to have unique session in the context of each request.
+The main middleware is the database middleware which is made to provide a sqlalchemy session accessible throughout your
+application. We use the ContextVar api of python to have unique session in the context of each request.
 
-To use this middleware you must at first create a Database object where you must pass the url of your database and the engine options of SQLAlchemy:
+To use this middleware you must at first create a Database object where you must pass the url of your database and the 
+engine options of SQLAlchemy:
 
 ```python
 db = Database(
@@ -50,16 +52,18 @@ After that you can have access to the sqlalchemy session of the current request,
 ```python
 db.session.query(User).first()
 ```
-Note that if you want to have access to a sqlalchemy session outisde of a request context, you must create a session by using the session contextmanager of the Datbase object:
+Note that if you want to have access to a sqlalchemy session outside a request context, you must create a session by 
+using the session contextmanager of the Database object:
 
 ```python
 with db.session_ctx():
     db.session.query(User).all()
 ```
-The middleware is actually using this contextmanager for each requests.
+The middleware is actually using this contextmanager for each request.
 
-### The AutocomitMiddleware
-The auto commit middleware as its name suggest is a middleware which automatically commit at the end of each request. It must be used with the database middleware and must be registered before otherwise it won't work:
+### The AutocommitMiddleware
+The auto commit middleware as its name suggest is a middleware which automatically commit at the end of each request. 
+It must be used with the database middleware and must be registered before otherwise it won't work:
 
 ```python
 fastapi = Fastapi()
@@ -68,7 +72,8 @@ fastapi.add_middleware(DatabaseMiddleware, db=db)
 ```
 
 ## The event bus
-The even tbus provide you a way to emit event in your application and register handlers to handle them. This allow you to create an event-driven architecture for your application. 
+The event bus provide you a way to emit event in your application and register handlers to handle them. This allows
+you to create an event-driven architecture for your application. 
 
 To use the event bus within your application, you must create at least one event bus
 and register the event bus middleware to the fastapi middlewares stack
@@ -93,7 +98,8 @@ def check_email_uniqueness(e: EmailChanged):
     # some logic
     pass
 ```
-There are two kinds of handler sync and async handler. Sync handlers are called once the event is emitted, whereas async handlers are called at the end of the current request.
+There are two kinds of handler sync and async handler. Sync handlers are called once the event is emitted, 
+whereas async handlers are called at the end of the current request.
 To register an async handler is nearly the same as above
 
 ```python
@@ -102,7 +108,7 @@ def check_email_uniqueness(e: EmailChanged | OtherEvent):
     # some logic
     pass
 ```
-Note that an handler can handle multiple types of event
+Note that a handler can handle multiple types of event
 
 After that you can emit events wherever you want in your Fastapi application:
 
@@ -112,10 +118,13 @@ emit(EmailChanged(email=email))
 
 ## The database testing class
 
-Fast-sqlalchemy provide an utility class named TestDatabase which can be used to test your Fastapi application with SQLAlchemy with ease. This class allow you to have isolated test by having each test wrapped in a transaction that is rollback at the end of each test, so that each test have a fresh database.
+Fast-sqlalchemy provide a utility class named TestDatabase which can be used to test your Fastapi application with 
+SQLAlchemy with ease. This class allow you to have isolated test by having each test wrapped in a transaction that is 
+rollback at the end of each test, so that each test have a fresh database.
 
 To use it with pytest, you can simply create two fixtures.
-A primary fixture with a scope of 'session' which will create a connection to the database and create the database if it doesn't exist (A testing database is created with the same name of your application's databse prefixed with 'test_'). 
+A primary fixture with a scope of 'session' which will create a connection to the database and create the database if it 
+doesn't exist (A testing database is created with the same name of your application's database prefixed with 'test_'). 
 The testing database is then dropped at the end (You can optionally turn if off).
 
 ```python
@@ -127,7 +136,8 @@ def db_client():
     with db_client.start_connection(metadata=metadata):
         yield db_client
 ```
-Note that this class is compatible with the library factory_boy, you can register as shown in the example above a list of modules which contains your factory class so that each factory wil be bound to the session provided by the TestDatabase object.
+Note that this class is compatible with the library factory_boy, you can register as shown in the example above a list 
+of modules which contains your factory class so that each factory wil be bound to the session provided by the TestDatabase object.
 
 After that you can create a second fixture:
 
@@ -145,7 +155,7 @@ def test_create_user(sqla_session):
     assert sqla_session.query(User).first().id == user.id
 ```
 
-## The yaml config reader
+## The yaml configuration loader
 
 Fast-sqlalchemy provide a class named Configuration which allow you to have your application's configuration store in yaml files:
 
@@ -154,9 +164,24 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 config = Configuration(os.path.join(ROOT_DIR, "config"))
 config.load_config(os.path.join(ROOT_DIR, ".env"))
 ```
-When you're creating the object you must specify the path of your configuration directory, this directory will contains all of your yaml files
-Then you can load these configurations file by calling __load_config__, this method accept an env_path which corresponds to a .env file.
-After that you can create your yaml configuration files. Note that you can use your environment variables within your yaml files, these variables will be parsed.
+When you're creating the object you must specify the path of your configuration directory, this directory will contain all of your yaml files.
+You can also specify a .env file which will be read thanks to the dotenv library.
+Then you can load these configurations file by calling __load_config__, you specify a config name, this config name must
+match a subdirectory within the configuration directory. This subdirectory should contain yaml files that will be merged
+with the yaml files present at the root of the configuration directory. This way you can have multiple configurations witch 
+will share the same base configuration.
+The configuration folder may look like this:
+```
++-- config
+|   +-- base.yaml
+|   +-- other.yaml
+|   +-- test
+|    |   +-- base.yaml
+|   +-- prod
+|    |   +-- base.yaml
+```
+
+Note that you can use your environment variables within your yaml files, these variables will be parsed.
 
 ```yaml
 project_name: ${PROJECT_NAME}
@@ -166,9 +191,15 @@ local: fr_FR
 Then you can have access to your configuration within your application like this:
 
 ```python
-config["project_name"].get(str)
+config["general"]["project_name"]
 ```
-Note that, the library confuse is used underneath, check out here to have more details https://github.com/beetbox/confuse
+or with the __get__ method witch accept dot-separated notation and a default
+value as second parameter.
+```python
+config.get("general.project_name", "default_name")
+```
+Note that, if a key is not found in yaml files, as fallback we'll try to find the
+key in environment or raise a KeyError exception if not present. 
 
 ## Licence
 
