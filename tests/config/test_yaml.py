@@ -69,5 +69,6 @@ def test_get_env_with_dot_annotation(config_test):
     config_test.load_config()
     assert config_test.get("nested.key.subkey2")  == "val2"
     assert config_test.get("nested.key.subkey100", "default") == "default"
+    assert config_test.get("env_var") == "fallback"
     with pytest.raises(KeyError):
         config_test.get("nested.key.subkey100")

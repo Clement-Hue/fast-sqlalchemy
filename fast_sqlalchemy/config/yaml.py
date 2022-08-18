@@ -78,7 +78,7 @@ class Configuration:
         try:
             if key is None:
                 return self._config
-            return reduce(lambda c, k: c[k], key.split("."), self._config)
+            return reduce(lambda c, k: c[k], key.split("."), self)
         except KeyError:
             if default is None:
                 raise
