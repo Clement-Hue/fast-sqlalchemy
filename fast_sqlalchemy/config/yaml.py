@@ -4,15 +4,14 @@ from functools import reduce
 import yaml
 from dotenv import load_dotenv
 
-from fast_sqlalchemy.config.exceptions import ConfigNotLoaded
+from fast_sqlalchemy.config.exceptions import ConfigNotFound
 from fast_sqlalchemy.config.utils import load_yaml_files, deep_merge_dict
 
 logger = logging.getLogger(__name__)
 
 
-
 class Configuration:
-    def __init__(self, config_dir=None,  env_path=None):
+    def __init__(self, config_dir=None, env_path=None):
         """
         Create a configuration object which load yaml files.
 
@@ -28,12 +27,13 @@ class Configuration:
     @property
     def _config(self):
         if self.__config is None:
-            raise ConfigNotLoaded()
+            raise ConfigNotFound()
         return self.__config
 
     @_config.setter
     def _config(self, value):
         self.__config = value
+
     def _create_loader(self):
         loader = yaml.Loader
         self.env_pattern = re.compile(r".*?\${(.*?)}")
@@ -49,7 +49,8 @@ class Configuration:
             else:
                 logger.warning(f"Environment variable {group} not found")
         return value
-    def load_config(self, env: str=None):
+
+    def load_config(self, env: str = None):
         """
         Load all the configuration files within the config_dir
 

@@ -49,6 +49,7 @@ class TestDatabase:
         try:
             if not sqlalchemy_utils.database_exists(self.url):
                 sqlalchemy_utils.create_database(self.url)
+                logger.debug("Testing database created")
             metadata.create_all(bind=self.engine)
             self.connection = self.engine.connect()
         except InternalError:
@@ -75,7 +76,7 @@ class TestDatabase:
 
         self.engine.dispose()
         if drop_database:
-            logger.debug("Drop database")
+            logger.debug("Drop testing database")
             sqlalchemy_utils.drop_database(self.url)
         logger.debug("Releasing resources")
 

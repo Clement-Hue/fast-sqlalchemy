@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from fast_sqlalchemy.config.exceptions import ConfigNotLoaded
+from fast_sqlalchemy.config.exceptions import ConfigNotFound
 from fast_sqlalchemy.config.yaml import Configuration
 
 root_dir = os.path.dirname(os.path.abspath(__file__))
@@ -84,12 +84,12 @@ def test_set_env_with_dot_annotation(config_test):
     assert config_test.get("new_nested.key.val") == "new"
 
 def test_access_config_without_load_config(config_test):
-    with pytest.raises(ConfigNotLoaded):
+    with pytest.raises(ConfigNotFound):
         config_test.set("nested.key.subkey2", "override")
-    with pytest.raises(ConfigNotLoaded):
+    with pytest.raises(ConfigNotFound):
         config_test.get("nested.key.subkey2")
-    with pytest.raises(ConfigNotLoaded):
+    with pytest.raises(ConfigNotFound):
         val = config_test["nested.key"]["subkey2"]
-    with pytest.raises(ConfigNotLoaded):
+    with pytest.raises(ConfigNotFound):
         config_test["nested.key"]["subkey2"] = "test"
 
