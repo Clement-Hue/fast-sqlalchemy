@@ -72,6 +72,7 @@ class Configuration:
             logger.warning("Key {item} not found in yaml files. The environment variable is used as fallback")
             return os.getenv(item)
 
+
     def __setitem__(self, key, value):
         self._config[key] = value
 

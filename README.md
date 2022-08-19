@@ -137,7 +137,7 @@ def db_client():
         yield db_client
 ```
 Note that this class is compatible with the library factory_boy, you can register as shown in the example above a list 
-of modules which contains your factory class so that each factory wil be bound to the session provided by the TestDatabase object.
+of modules which contains your factory classes so that each factory wil be bound to the session provided by the TestDatabase object.
 
 After that you can create a second fixture:
 
@@ -166,7 +166,7 @@ config.load_config(config="test")
 ```
 When you're creating the object you must specify the path of your configuration directory, this directory will contain all of your yaml files.
 You can also specify a .env file which will be read thanks to the dotenv library.
-Then you can load these configurations file by calling __load_config__, you specify a config name, this config name must
+Then you can load these configurations file by calling __load_config__, you can specify a config name, this config name must
 match a subdirectory within the configuration directory. This subdirectory should contain yaml files that will be merged
 with the yaml files present at the root of the configuration directory. This way you can have multiple configurations witch 
 will share the same base configuration.
