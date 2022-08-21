@@ -5,7 +5,6 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from fast_sqlalchemy.persistence.context import _session
 from fast_sqlalchemy.persistence.database import Database
-from fast_sqlalchemy.persistence.exceptions import AlreadyExistSession
 
 
 @pytest.fixture()
@@ -50,8 +49,3 @@ def test_set_session_config():
     assert isinstance(test_db._session_factory, sessionmaker)
 
 
-def test_error_session_already_exists(db):
-    with db.session_ctx():
-        with pytest.raises(AlreadyExistSession):
-            with db.session_ctx():
-                pass
