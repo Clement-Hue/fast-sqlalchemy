@@ -80,7 +80,7 @@ class LocalEventBus(EventBus):
         return decorate
 
     async def handle_async_events(self, events: Iterable):
-        logger.debug(f"local event bus call with {events}, handlers {self.event_handlers}")
+        logger.debug(f"local event bus call with {events}")
         coroutines = []
         for event in events:
             for handler in self.event_handlers.get(type(event), []):

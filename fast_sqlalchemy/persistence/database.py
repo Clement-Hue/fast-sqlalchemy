@@ -6,6 +6,8 @@ from sqlalchemy.engine import URL, make_url
 from sqlalchemy.orm import Session, sessionmaker
 
 from .context import _session
+from .exceptions import AlreadyExistSession
+
 
 class Database:
     def __init__(self, url: URL | str , autoflush=False, autocommit=False, **engine_options):
@@ -20,6 +22,8 @@ class Database:
 
     @contextlib.contextmanager
     def session_ctx(self):
+        if _session.get() is not None:
+            raise AlreadyExistSession()
         session = self._session_factory()
         token = _session.set(session)
         try:
