@@ -49,3 +49,11 @@ def test_set_session_config():
     assert isinstance(test_db._session_factory, sessionmaker)
 
 
+def test_ctx_within_ctx(db):
+    with db.session_ctx() as s1:
+        with db.session_ctx() as s2:
+            assert s1 != s2
+            def inner():
+                assert _session.get() == s2
+            inner()
+        assert _session.get() == s1
