@@ -25,12 +25,14 @@ def test_db_handler(db, mocker: MockerFixture):
     def mapping(record: LogRecord):
         return {"level": record.levelname, "time": record.asctime, "message": record.message}
     handler = DatabaseHandler(db=db, table=log_table, mapping_logs=mapping)
+    record_format = mocker.patch.object(handler, "format")
     time = "2022-10-01 08:10:12"
     message = "exception occurred"
     level = "INFO"
     record = mocker.Mock(levelname=level, asctime=time, message=message)
     with db.session_ctx():
         handler.emit(record)
+        record_format.assert_called_with(record)
         logs = db.session.execute(select(log_table)).all()
         assert len(logs) == 1
         assert logs[0].level == level

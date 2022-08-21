@@ -21,6 +21,7 @@ class DatabaseHandler(Handler):
 
     def emit(self, record: LogRecord) -> None:
         try:
+            self.format(record)
             with self.db.session_ctx():
                 stmt = insert(self.table).values(**self.mapping_logs(record))
                 self.db.session.execute(stmt)
