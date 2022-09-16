@@ -14,8 +14,10 @@ event_bus_store: Set[EventBus] = set()
 def event_queue_ctx():
     logger.debug("event queue set")
     token = _event_queue.set([])
-    yield
-    logger.debug("event queue reset")
-    _event_queue.reset(token)
+    try:
+        yield
+    finally:
+        logger.debug("event queue reset")
+        _event_queue.reset(token)
 
 

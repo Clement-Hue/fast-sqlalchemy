@@ -130,3 +130,14 @@ async def test_event_queue_context():
             assert _event_queue.get() == [e1]
 
     await asyncio.gather(coroutine(), coroutine())
+
+def test_event_queue_clear_when_error():
+    class CustomEvent:
+        pass
+    try:
+        with event_queue_ctx():
+            _event_queue.set([CustomEvent()])
+            raise RuntimeError
+    except RuntimeError:
+        pass
+    assert _event_queue.get() == []
