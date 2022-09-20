@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fast-sqlalchemy"
-version = "0.11.2"
+version = "0.11.3"
 description = "Make application with Fastapi and Sqlalchemy with ease"
 authors = ["Clement_Hue <clementhue@hotmail.fr>"]
 license = "MIT"

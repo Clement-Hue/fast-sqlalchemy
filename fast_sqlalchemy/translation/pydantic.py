@@ -15,10 +15,17 @@ class PydanticI18n:
         ]
 
     def _translate(self, err_type: str, ctx: dict):
-        local_trans = self._translations.get(self.local, None)
-        if local_trans is None:
-            raise LocalNotFound(self.local)
-        translated_msg: str = local_trans.get(err_type, None)
+        translated_msg: str = self.get_translations(self.local).get(err_type, None)
         if translated_msg is None:
             return None
         return translated_msg.format(*ctx.values())
+
+    @property
+    def locales(self):
+        return tuple(self._translations.keys())
+
+    def get_translations(self, local: str):
+        local_trans = self._translations.get(local, None)
+        if local_trans is None:
+            raise LocalNotFound(local)
+        return local_trans

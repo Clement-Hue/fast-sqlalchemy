@@ -42,3 +42,22 @@ def test_local_missing():
     py_18n = PydanticI18n(translations=translations, local="fr_FR")
     with pytest.raises(LocalNotFound):
         py_18n.translate(errors)
+
+def test_get_locals():
+    translations = {
+        "fr_FR": {
+        },
+        "en_EN":{}
+    }
+    py_18n = PydanticI18n(translations=translations, local="fr_FR")
+    assert py_18n.locales == ("fr_FR", "en_EN")
+
+def test_get_translations():
+    translations = {
+        "fr_FR": {
+            "value_error.any_str.max_length": "Ce champs doit faire {0} caractères",
+            "value_error.any_str.min_length": "Ce {1} doit faire plus de {0} caractères",
+        }
+    }
+    py_18n = PydanticI18n(translations=translations, local="fr_FR")
+    assert py_18n.get_translations("fr_FR") == translations["fr_FR"]
