@@ -9,6 +9,7 @@ from fast_sqlalchemy.persistence.database import Database
 class DatabaseHandler(Handler):
     def __init__(self, db: Database, table: Table, mapping_logs: Callable[[LogRecord], dict[str, str]]):
         """
+        Save log within the database's table
 
         :param db: The database object
         :param table_name: The table which will contain the logs
