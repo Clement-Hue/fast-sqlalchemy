@@ -10,7 +10,6 @@ from alembic.config import Config
 from factory.alchemy import SQLAlchemyModelFactory
 from sqlalchemy import create_engine, event
 from sqlalchemy.engine import Connection
-from sqlalchemy.exc import InternalError
 import sqlalchemy_utils
 
 if TYPE_CHECKING:
