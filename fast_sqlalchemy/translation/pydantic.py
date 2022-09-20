@@ -14,11 +14,11 @@ class PydanticI18n:
         } for error in errors
         ]
 
-    def _translate(self, err_type: str, ctx: dict):
+    def _translate(self, err_type: str, ctx: dict = None):
         translated_msg: str = self.get_translations(self.local).get(err_type, None)
         if translated_msg is None:
             return None
-        return translated_msg.format(*ctx.values())
+        return translated_msg.format(*ctx.values()) if ctx is not None else translated_msg
 
     @property
     def locales(self):

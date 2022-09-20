@@ -31,6 +31,18 @@ def test_key_not_found():
     res = py_18n.translate(errors)
     assert res[0]["msg"] == 'ensure this value has at most 20 characters'
 
+def test_error_without_context():
+    errors = [{'loc': ('body', 'firstname'), 'msg': 'ensure this value has at most 20 characters',
+               'type': 'value_error.any_str.max_length', }]
+    translations = {
+        "fr_FR": {
+            "value_error.any_str.max_length": "Ce champs est trop grand"
+        }
+    }
+    py_18n = PydanticI18n(translations=translations, local="fr_FR")
+    res = py_18n.translate(errors)
+    assert res[0]["msg"] == "Ce champs est trop grand"
+
 def test_local_missing():
     errors = [{'loc': ('body', 'firstname'), 'msg': 'ensure this value has at most 20 characters',
                'type': 'value_error.any_str.max_length', 'ctx': {'limit_value': 20}}]
