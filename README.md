@@ -9,6 +9,7 @@ This project was first made to provide some tools to use Fastapi with SQLAlchemy
     - [The AutocommitMiddleware](#the-autocommitmiddleware)
 - [The event bus](#the-event-bus)
 - [The yaml config reader](#the-yaml-configuration-loader)
+- [Pydantic i18n](#pydantic-i18n)
 
 ## Installation
 
@@ -201,7 +202,43 @@ config.get("general.project_name", "default_name")
 Note that, if a key is not found in yaml files, as fallback we'll try to find the
 key in environment or raise a KeyError exception if not present. 
 
+## Pydantic i18n
+This utility class allow you to translate all error messages of pydantic.
+You can specify a translation for a specific pydantic's error code.
+for instance:
+```python
+translations = {
+  "fr_FR": {
+    "value_error.any_str.max_length": "Ce champs doit faire {0} caractères",
+    "value_error.any_str.min_length": "Ce {1} doit faire plus de {0} caractères",
+  }
+}
+```
+You can even organize it with a nested structure:
+```python
+translations = {
+"fr_FR": {
+    "value_error": {
+      "any_str": {
+        "max_length": "Ce champs doit faire {0} caractères",
+      }
+    } 
+  }
+}
+```
+The error's context can be accessible through the placeholders '{\d}' like the __format__ python's function
+Then you can use these translations this way:
+```python
+tr = PydanticI18n(translations, local="fr_FR")
+```
+And create a middleware in Fastapi
+```python
+async def request_validation_handler(request: Request, exc: RequestValidationError):
+    return JSONResponse(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content=tr.translate(exc.errors()))
+```
+
 ## Licence
 
 This project is licensed under the terms of the MIT license.
+
 
