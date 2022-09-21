@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
-from my_project.settings import config
+from {PROJECT_NAME}.settings import config
 
 def create_app():
     app = FastAPI(title=config.get("project_name"),

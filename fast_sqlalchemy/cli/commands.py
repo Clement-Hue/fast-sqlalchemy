@@ -2,6 +2,7 @@ import shutil, os
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
+
 class GenerateProject:
     def __init__(self, name: str):
         self.name = name
@@ -9,7 +10,6 @@ class GenerateProject:
     def generate(self):
         shutil.copytree(src=os.path.join(ROOT_DIR, "boilerplate"), dst=self.name)
         self._replace_placeholder()
-
 
     def _replace_placeholder(self):
         for subdir, dirs, files in os.walk(self.name):
