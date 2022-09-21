@@ -1,0 +1,5 @@
+project_name: my_project
+description: "my_project api"
+version: "1.0"
+
+cors_origin: []
