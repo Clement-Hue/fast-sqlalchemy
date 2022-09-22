@@ -5,8 +5,9 @@ from shutil import ignore_patterns
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 class GenerateProject:
-    def __init__(self, name: str):
+    def __init__(self, name: str, dest: str):
         self.name = name
+        self.dest = dest
 
     @property
     def name(self):
@@ -18,7 +19,7 @@ class GenerateProject:
             raise ValueError(f"{value} is a not a valid project name")
         self._name = value
     def generate(self):
-        shutil.copytree(src=os.path.join(ROOT_DIR, "__template__"), dst=self.name, ignore=ignore_patterns("__pycache__"))
+        shutil.copytree(src=os.path.join(ROOT_DIR, "__template__"), dst=os.path.join(self.dest, self.name), ignore=ignore_patterns("__pycache__"))
         self._replace_placeholder()
 
     def _replace_placeholder(self):
