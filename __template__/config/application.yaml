@@ -2,7 +2,7 @@ project_name: {PROJECT_NAME}
 description: "{PROJECT_NAME} api"
 version: "1.0"
 
-secret_key: {SECRET_KEY}
+secret_key: "{SECRET_KEY}"
 local: "en_EN"
 
 cors_origin: []
@@ -11,7 +11,7 @@ db:
   username: "username"
   password: "password"
   port: 3306
-  database: "database name"
+  database: "{PROJECT_NAME}"
   host: "localhost"
 
 logging:
@@ -31,6 +31,7 @@ logging:
       level: "INFO"
       handlers:
         - console
-    fast_sqlalchemy: {} # keep it to have fast_sqlalchemy logs propagate to the root logger
+    fast_sqlalchemy:  # keep it to have fast_sqlalchemy logs propagate to the root logger
+      level: "INFO"
     alembic:
       level: "INFO"

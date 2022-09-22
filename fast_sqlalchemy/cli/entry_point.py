@@ -2,6 +2,11 @@ import argparse
 
 from fast_sqlalchemy.cli.commands import GenerateProject
 
+def handle_args(args):
+    if args.commands == "new":
+        generator = GenerateProject(args.project_name)
+        generator.generate()
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -11,9 +16,7 @@ def main():
     new_project = subparsers.add_parser("new", help="Create a new project")
     new_project.add_argument("project_name", metavar="name",  type=str, help="Name of the new project")
     args = parser.parse_args()
-    if args.commands == "new":
-        generator = GenerateProject(args.project_name)
-        generator.generate()
+    handle_args(args)
 
 
 if __name__ == "__main__":
