@@ -1,0 +1,36 @@
+project_name: {PROJECT_NAME}
+description: "{PROJECT_NAME} api"
+version: "1.0"
+
+secret_key: {SECRET_KEY}
+local: "en_EN"
+
+cors_origin: []
+
+db:
+  username: "username"
+  password: "password"
+  port: 3306
+  database: "database name"
+  host: "localhost"
+
+logging:
+  version: 1
+  disable_existing_loggers: true
+  formatters:
+    default:
+      (): "fast_sqlalchemy.logging.formatter.ColorFormatter"
+      datefmt: "%y-%m-%d %H:%M:%S"
+  handlers:
+    console:
+      level: "INFO"
+      class: "logging.StreamHandler"
+      formatter: default
+  loggers:
+    root:
+      level: "INFO"
+      handlers:
+        - console
+    fast_sqlalchemy: {} # keep it to have fast_sqlalchemy logs propagate to the root logger
+    alembic:
+      level: "INFO"
