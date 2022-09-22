@@ -17,7 +17,7 @@ class GenerateProject:
             raise ValueError(f"{value} is a not a valid project name")
         self._name = value
     def generate(self):
-        shutil.copytree(src=os.path.join(ROOT_DIR, "../../__template__"), dst=self.name)
+        shutil.copytree(src=os.path.join(ROOT_DIR, "__template__"), dst=self.name)
         self._replace_placeholder()
 
     def _replace_placeholder(self):
@@ -25,7 +25,7 @@ class GenerateProject:
             for file in files:
                 with open(os.path.join(subdir, file), "r+") as template_file:
                     template = template_file.read()
-                    template = template.replace("__template__", self.name)
+                    template = template.replace("fast_sqlalchemy.cli.__template__", self.name)
                     template = template.format(PROJECT_NAME=self.name, SECRET_KEY=token_hex(32))
                     template_file.seek(0)
                     template_file.write(template)

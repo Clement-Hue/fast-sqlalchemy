@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from __template__.api.routes import router
-from __template__.settings import config, db
+from fast_sqlalchemy.cli.__template__.api.routes import router
+from fast_sqlalchemy.cli.__template__.settings import config, db
 from fast_sqlalchemy.persistence.middlewares import AutocommitMiddleware, DatabaseMiddleware
 
 
