@@ -13,9 +13,11 @@ class GenerateProject:
     def _replace_placeholder(self):
         for subdir, dirs, files in os.walk(self.name):
             for file in files:
-                with open(os.path.join(subdir, file), "r") as template_file:
+                with open(os.path.join(subdir, file), "r+") as template_file:
                     template = template_file.read()
-                with open(os.path.join(subdir, file), "w") as write_file:
                     template = template.replace("__boilerplate__", self.name)
                     template = template.format(PROJECT_NAME=self.name)
-                    write_file.write(template)
+                    template_file.seek(0)
+                    template_file.write(template)
+                    template_file.truncate()
+
