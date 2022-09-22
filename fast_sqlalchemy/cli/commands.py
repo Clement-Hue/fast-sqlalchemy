@@ -1,5 +1,6 @@
 import shutil, os
 from secrets import token_hex
+from shutil import ignore_patterns
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -17,7 +18,7 @@ class GenerateProject:
             raise ValueError(f"{value} is a not a valid project name")
         self._name = value
     def generate(self):
-        shutil.copytree(src=os.path.join(ROOT_DIR, "__template__"), dst=self.name)
+        shutil.copytree(src=os.path.join(ROOT_DIR, "__template__"), dst=self.name, ignore=ignore_patterns("__pycache__"))
         self._replace_placeholder()
 
     def _replace_placeholder(self):
