@@ -183,7 +183,7 @@ The configuration folder may look like this:
 ```
 
 Note that you can use your environment variables within your yaml files, these variables will be parsed.
-A default value can also be specified if th environment variable is not found.
+A default value can also be specified if the environment variable is not found.
 
 ```yaml
 project_name: ${PROJECT_NAME}
