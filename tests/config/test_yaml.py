@@ -11,7 +11,7 @@ root_dir = os.path.dirname(os.path.abspath(__file__))
 @pytest.fixture
 def config_test():
     return Configuration(os.path.join(root_dir, "test_cfg_dir"),
-                         env_path=os.path.join(root_dir, ".env"))
+                         env_path=os.path.join(root_dir, "env_test"))
 
 def test_get_yaml_config(config_test):
     config_test.load_config()
@@ -38,6 +38,8 @@ def test_get_all_config(config_test):
     config_test.load_config()
     assert config_test.get() == {'db': 'test_db',
                                  'env_key': 'var_foo.bar',
+                                 "env_default": "gg:-fo@gmail.com",
+                                 "env_default_empty": "",
                                  'nested': {'key': {'subkey1': 'val1', 'subkey2': 'val2'}},
                                  'other_file': {'key': 'other'}}
 
@@ -93,3 +95,10 @@ def test_access_config_without_load_config(config_test):
     with pytest.raises(ConfigNotFound):
         config_test["nested.key"]["subkey2"] = "test"
 
+def test_env_default_value(config_test):
+    config_test.load_config()
+    assert config_test["env_default"] == "gg:-fo@gmail.com"
+
+def test_env_default_value_empty(config_test):
+    config_test.load_config()
+    assert config_test["env_default_empty"] == ""

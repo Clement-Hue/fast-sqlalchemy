@@ -44,10 +44,15 @@ class Configuration:
     def _env_constructor(self, loader, node):
         value = loader.construct_scalar(node)
         for group in self.env_pattern.findall(value):
-            if env := os.getenv(group):
+            split_group = group.split(":-",1)
+            default_value = split_group[1] if len(split_group) == 2 else None
+            if env := os.getenv(split_group[0]):
                 value = value.replace(f"${{{group}}}", env)
             else:
-                logger.warning(f"Environment variable {group} not found")
+                if default_value is not None:
+                    value = value.replace(f"${{{group}}}", default_value)
+                logger.warning(f"Environment variable {split_group[0]} not found" +
+                               f"use the default value: {default_value}" if default_value is not None else "")
         return value
 
     def load_config(self, config: str = None):
@@ -117,6 +122,6 @@ class Configuration:
                 f"'{env}' within the config directory."
             )
             return
-        test_config = load_yaml_files(path, self._yaml_loader)
-        self._config = deep_merge_dict(self._config, test_config)
+        env_config = load_yaml_files(path, self._yaml_loader)
+        self._config = deep_merge_dict(self._config, env_config)
         logger.info(f"Configuration '{env}' loaded")

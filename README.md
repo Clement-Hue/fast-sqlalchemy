@@ -183,10 +183,11 @@ The configuration folder may look like this:
 ```
 
 Note that you can use your environment variables within your yaml files, these variables will be parsed.
+A default value can also be specified if th environment variable is not found.
 
 ```yaml
 project_name: ${PROJECT_NAME}
-secret_key: ${SECRET_KEY}
+secret_key: ${SECRET_KEY:-default value}
 local: fr_FR
 ```
 Then you can have access to your configuration within your application like this:

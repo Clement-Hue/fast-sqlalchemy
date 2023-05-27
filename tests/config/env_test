@@ -1,0 +1,3 @@
+ENV_1=foo
+ENV_2=bar
+env_var=fallback
