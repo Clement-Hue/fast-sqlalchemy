@@ -49,10 +49,11 @@ class Configuration:
             if env := os.getenv(split_group[0]):
                 value = value.replace(f"${{{group}}}", env)
             else:
+                log_msg = f"Environment variable {split_group[0]} not found. "
                 if default_value is not None:
                     value = value.replace(f"${{{group}}}", default_value)
-                logger.warning(f"Environment variable {split_group[0]} not found" +
-                               f"use the default value: {default_value}" if default_value is not None else "")
+                    log_msg += f"Using the default value: {default_value}"
+                logger.warning(log_msg)
         return value
 
     def load_config(self, config: str = None):
