@@ -12,8 +12,7 @@ def test_register_handler_with_event(mocker: MockerFixture):
     class FalseEvent:
         pass
 
-    with pytest.raises(KeyError):
-        assert event_bus.event_handlers[FalseEvent]
+    assert event_bus.event_handlers[FalseEvent] == []
 
     class CustomEvent:
         pass
@@ -141,3 +140,13 @@ def test_event_queue_clear_when_error():
     except RuntimeError:
         pass
     assert _event_queue.get() == []
+
+def test_error_if_coroutine_use_as_handler():
+    event_bus = LocalEventBus()
+    class CustomEvent:
+        pass
+
+    with pytest.raises(TypeError):
+        @event_bus.handler(CustomEvent)
+        async def handler(e):
+            pass
