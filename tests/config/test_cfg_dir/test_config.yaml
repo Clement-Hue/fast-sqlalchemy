@@ -1,8 +1,11 @@
 env_key: var_${ENV_1}.${ENV_2}
 env_default: ${EMAIL:-gg:-fo@gmail.com}
+env_bool: ${BOOL}
 env_default_empty: ${EMAIL:-}
 db: test_db
 nested:
   key:
     subkey1: "val1"
     subkey2: "val2"
+    bool: true
+    number: ${FLOAT:-10.5}

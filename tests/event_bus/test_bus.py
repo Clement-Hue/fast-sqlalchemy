@@ -65,7 +65,7 @@ async def test_event_queue(mocker: MockerFixture, event_bus_store_ctx):
         e2 = CustomEvent()
         emit(e1)
         emit(e2)
-        handler.assert_not_called()
+        assert handler.call_count == 0
         await publish_events()
         assert handler.call_count == 2
         assert handler.call_args_list == [((e1,),), ((e2,),)]
@@ -101,25 +101,18 @@ def test_unsubscribe(mocker: MockerFixture):
         pass
 
     event_bus.subscribe(CustomEvent, handler)
-    custom_event = CustomEvent()
     assert len(event_bus.event_handlers[CustomEvent]) == 1
     event_bus.unsubscribe(CustomEvent, handler)
     assert len(event_bus.event_handlers[CustomEvent]) == 0
-    event_bus.handle_event(custom_event)
+    event_bus.handle_event(CustomEvent())
     handler.assert_not_called()
 
 
 @pytest.mark.asyncio
 async def test_event_queue_context():
-    event_bus = LocalEventBus()
     class CustomEvent:
         pass
 
-    @event_bus.async_handler(CustomEvent)
-    def handler(e):
-        pass
-
-    event_bus.async_handler(CustomEvent)(handler)
     e1 = CustomEvent()
 
     async def coroutine():
@@ -129,13 +122,12 @@ async def test_event_queue_context():
             assert _event_queue.get() == [e1]
 
     await asyncio.gather(coroutine(), coroutine())
+    assert _event_queue.get() == []
 
 def test_event_queue_clear_when_error():
-    class CustomEvent:
-        pass
     try:
         with event_queue_ctx():
-            _event_queue.set([CustomEvent()])
+            _event_queue.set(["custom event"])
             raise RuntimeError
     except RuntimeError:
         pass

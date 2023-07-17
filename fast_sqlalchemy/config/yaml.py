@@ -5,7 +5,7 @@ import yaml
 from dotenv import load_dotenv
 
 from fast_sqlalchemy.config.exceptions import ConfigNotFound
-from fast_sqlalchemy.config.utils import load_yaml_files, deep_merge_dict
+from fast_sqlalchemy.config.utils import load_yaml_files, deep_merge_dict, parse_string
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +20,7 @@ class Configuration:
         """
         super().__init__()
         load_dotenv(env_path)
+        self.env_pattern = re.compile(r".*?\${(.*?)}")
         self.__config = None
         self._yaml_loader = self._create_loader()
         self.config_dir = config_dir
@@ -36,7 +37,6 @@ class Configuration:
 
     def _create_loader(self):
         loader = yaml.Loader
-        self.env_pattern = re.compile(r".*?\${(.*?)}")
         loader.add_implicit_resolver("!pathex", self.env_pattern, None)
         loader.add_constructor("!pathex", self._env_constructor)
         return loader
@@ -54,7 +54,7 @@ class Configuration:
                     value = value.replace(f"${{{group}}}", default_value)
                     log_msg += f"Using the default value: {default_value}"
                 logger.warning(log_msg)
-        return value
+        return parse_string(value)
 
     def load_config(self, config: str = None):
         """
@@ -66,7 +66,7 @@ class Configuration:
         """
         self._config = load_yaml_files(self.config_dir, self._yaml_loader)
         if config:
-            self._load_env_config(config)
+            self._load_specific_config(config)
 
     def __getitem__(self, item):
         try:
@@ -114,15 +114,20 @@ class Configuration:
             obj = obj.setdefault(k, {})
         obj[keys[-1]] = value
 
-    def _load_env_config(self, env: str):
-        path = os.path.join(self.config_dir, env)
+    def _load_specific_config(self, specific_config: str):
+        """
+        Load a specific configuration based on the provided specific_config parameter and merge it with
+        the base config.
+
+        :param specific_config: The name of the specific configuration.
+        """
+        path = os.path.join(self.config_dir, specific_config)
         if not os.path.isdir(path):
             logger.warning(
-                f"No directory with name '{env}' find in the config "
+                f"No directory with name '{specific_config}' find in the config "
                 f"directory. Make sure to create a directory with name "
-                f"'{env}' within the config directory."
+                f"'{specific_config}' within the config directory."
             )
             return
-        env_config = load_yaml_files(path, self._yaml_loader)
-        self._config = deep_merge_dict(self._config, env_config)
-        logger.info(f"Configuration '{env}' loaded")
+        self._config = deep_merge_dict(self._config, load_yaml_files(path, self._yaml_loader))
+        logger.info(f"Configuration '{specific_config}' loaded")
