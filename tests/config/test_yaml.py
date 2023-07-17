@@ -37,13 +37,19 @@ def test_set_item(config_test):
 def test_get_all_config(config_test):
     config_test.load_config()
     assert config_test.get() == {'db': 'test_db',
+                                 "number": 587,
+                                 "bool": True,
                                  'env_key': 'var_foo.bar',
                                  "env_default": "gg:-fo@gmail.com",
                                  "env_default_empty": "",
                                  'nested': {'key': {'subkey1': 'val1', 'subkey2': 'val2'}},
                                  'other_file': {'key': 'other'}}
 
-
+def test_bool_and_number_value(config_test):
+    config_test.load_config()
+    assert config_test.get("number") == 587
+    assert config_test.get("bool") is True
+    assert config_test["bool"] is True
 def test_merge_config(config_test):
     config_test.load_config(config="test")
     assert config_test["nested"]["key"]["subkey2"] == "override"

@@ -2,6 +2,8 @@ env_key: var_${ENV_1}.${ENV_2}
 env_default: ${EMAIL:-gg:-fo@gmail.com}
 env_default_empty: ${EMAIL:-}
 db: test_db
+number: 587
+bool: true
 nested:
   key:
     subkey1: "val1"
