@@ -38,25 +38,26 @@ def test_get_all_config(config_test):
     config_test.load_config()
     assert config_test.get() == {'db': 'test_db',
                                  'env_key': 'var_foo.bar',
+                                 "env_bool": True,
                                  "env_default": "gg:-fo@gmail.com",
                                  "env_default_empty": "",
-                                 'nested': {'key': {'subkey1': 'val1', 'subkey2': 'val2', "bool": True, "number": 587}},
+                                 'nested': {'key': {'subkey1': 'val1', 'subkey2': 'val2', "bool": True, "number": 10.5}},
                                  'other_file': {'key': 'other'}}
 
 def test_bool_and_number_value(config_test):
     config_test.load_config()
-    assert config_test.get("nested.key.number") == 587
+    assert config_test.get("nested.key.number") == 10.5
     assert config_test.get("nested.key.bool") is True
     assert config_test["nested"]["key"]["bool"] is True
 def test_merge_config(config_test):
     config_test.load_config(config="test")
     assert config_test["nested"]["key"]["subkey2"] == "override"
-    assert config_test["nested"]["key"] == {"subkey1": "val1", "subkey2": "override", "bool": True, "number": 587}
+    assert config_test["nested"]["key"] == {"subkey1": "val1", "subkey2": "override", "bool": True, "number": 10.5}
 
 
 def test_merge_config_empty_directory(config_test):
     config_test.load_config(config="empty")
-    assert config_test["nested"]["key"] == {"subkey1": "val1", "subkey2": "val2", "bool": True , "number": 587}
+    assert config_test["nested"]["key"] == {"subkey1": "val1", "subkey2": "val2", "bool": True , "number": 10.5}
 
 def test_merge_config_not_found_directory(config_test, caplog):
     config_test.load_config(config="not_found")
