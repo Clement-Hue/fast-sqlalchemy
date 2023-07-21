@@ -45,7 +45,7 @@ class EventHandler:
         if inspect.iscoroutinefunction(self.func):
             await self.func(event)
         else:
-            await asyncio.to_thread(self.func, event)
+            self.func(event)
 
 
 class EventBus(ABC):
