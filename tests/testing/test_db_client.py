@@ -15,7 +15,7 @@ root_dir = os.path.dirname(os.path.abspath(__file__))
 
 @pytest.fixture
 def db():
-    return Database("sqlite://")
+    return Database("sqlite:///:memory:")
 
 
 def test_db_engine(db):

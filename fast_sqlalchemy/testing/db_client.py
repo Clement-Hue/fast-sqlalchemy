@@ -107,16 +107,6 @@ class TestDatabase:
                 factory._meta.sqlalchemy_session = session
                 factory._meta.sqlalchemy_session_persistence = "commit"
 
-            dialect_name = self.db.url.get_dialect().name
-            if dialect_name != "sqlite":
-                nested = self.connection.begin_nested()  # allow rollback within the test
-
-                @event.listens_for(session, "after_transaction_end")
-                def end_savepoint(session, transaction):
-                    nonlocal nested
-                    if not nested.is_active:
-                        nested = self.connection.begin_nested()
-
             yield session
         transaction.rollback()
         logger.debug("Transaction rollback")
