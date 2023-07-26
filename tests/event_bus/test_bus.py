@@ -60,7 +60,7 @@ async def test_event_queue(mocker: MockerFixture, event_bus_store_ctx):
         pass
 
     with event_bus_store_ctx([event_bus]), event_queue_ctx():
-        event_bus.async_handler(CustomEvent)(handler)
+        event_bus.handler(CustomEvent, on_publish=True)(handler)
         e1 = CustomEvent()
         e2 = CustomEvent()
         emit(e1)
@@ -77,11 +77,11 @@ async def test_multiple_event_handler_decorator(event_bus_store_ctx):
     class CustomEvent:
         pass
 
-    @event_bus.async_handler(CustomEvent)
+    @event_bus.handler(CustomEvent, on_publish=True)
     def handler_1(e):
         pass
 
-    @event_bus.async_handler(CustomEvent)
+    @event_bus.handler(CustomEvent, on_publish=True)
     def handler_2(e):
         pass
 

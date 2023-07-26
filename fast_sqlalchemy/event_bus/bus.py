@@ -54,7 +54,7 @@ class EventBus(ABC):
         pass
 
     @abstractmethod
-    async def handle_async_events(self, events: Iterable):
+    async def async_handle_events(self, events: Iterable):
         pass
 
 class LocalEventBus(EventBus):
@@ -96,48 +96,32 @@ class LocalEventBus(EventBus):
         """
         self.event_handlers[event_type] = [handler for handler in self.event_handlers[event_type] if handler.func != func]
 
-    def async_handler(self, *events):
-        """
-        Decorator that adds a handler to specific events.
-
-        The handler is called when the `publish_event` method is called.
-        The handler can be a coroutine.
-
-        :param *events: The events to listen on.
-        :returns: The decorated function.
-        """
-        def decorate(fun: Callable):
-            self.subscribe(events, fun, on_publish=True)
-            return fun
-
-        return decorate
-
-    def handler(self, *events):
+    def handler(self, *events, on_publish=False):
         """
         Decorator that adds a handler to specific events.
 
         The handler is called once the event is emitted.
-        The handler cannot be a coroutine.
 
         :param *events: The events to listen on.
+        :param on_publish: Call the handler when the publish method is called
         :returns: The decorated function.
-        :raises TypeError: If the decorated function is a coroutine function.
+        :raises TypeError: If the decorated function is a coroutine function and on_publish is False
         """
 
         def decorate(fun: Callable):
-            if asyncio.iscoroutinefunction(fun):
+            if not on_publish and asyncio.iscoroutinefunction(fun):
                 raise TypeError("Coroutine functions are not allowed as event handlers.")
-            self.subscribe(events, fun, on_publish=False)
+            self.subscribe(events, fun, on_publish=on_publish)
             return fun
 
         return decorate
 
-    async def handle_async_events(self, events: Iterable):
+    async def async_handle_events(self, events: Iterable):
         """
         Asynchronously handle a batch of events.
 
         This method processes the events using their respective event handlers.
-        Coroutine handlers are awaited, while non-coroutine handlers are executed in separate threads.
+        Coroutine handlers are awaited,
 
         :param events: The batch of events to handle.
         """

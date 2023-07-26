@@ -28,5 +28,5 @@ async def publish_events():
     """
     logger.debug("publishing events")
     events = _event_queue.get()
-    await asyncio.gather(*[event_bus.handle_async_events(events) for
-                         event_bus in event_bus_store])
+    await asyncio.gather(*[event_bus.async_handle_events(events) for
+                           event_bus in event_bus_store])

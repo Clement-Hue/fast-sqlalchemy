@@ -23,7 +23,7 @@ async def test_publish(mocker: MockerFixture, event_bus_store_ctx):
     event_bus = mocker.AsyncMock()
     with event_bus_store_ctx([event_bus]):
         await publish_events()
-        event_bus.handle_async_events.assert_called_with(_event_queue.get())
+        event_bus.async_handle_events.assert_called_with(_event_queue.get())
 
 
 @pytest.mark.asyncio
